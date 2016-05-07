@@ -453,8 +453,9 @@ else if((document.getElementById("code").value)=="sbp"){
    g=""
    g+="'UNITS = INCH"
    g+="JZ,0.25\n"
+	g+="MA,0\n"
    g+="J2,0,0\n"
-   g+="MIB,0,0,30,0.1\n"
+
    g+="PAUSE 3\n"
    g+="MS,30,10\n"
 //SO,1,1 //spindle on
@@ -469,9 +470,8 @@ for(i=0;i<dots.length;i++){
 			  g+="MA,"+ (Math.atan2(dots[i][j].X,dots[i][j].Y)*57.296).toFixed(3) +"\n"
 
            g+="J2,"+(((dots[i][j].X-xmin)/sf2)/25.4).toFixed(3)+","+((((ymax-ymin)/sf2)+((ymin-(dots[i][j].Y))/sf2))/25.4).toFixed(3) + "\n" 
-           
-
            g+="MZ,-0.125\n"
+   		  g+="MIZ,,,30,0.1\n"
            }
            else{
 
@@ -480,12 +480,13 @@ for(i=0;i<dots.length;i++){
            }
    }
 
+g+="MIZ,,,0,0\n"
 g+="JZ,0.125\n"
 
 
 }
 
-g+="MIB,0,0,0,0\n"
+g+="MA,0\n"
 g+="J3,0,0,0.25\n"
 
    fabmo.submitJob({

@@ -1,5 +1,5 @@
-fabmo-cardboard-app.fma: clean *.html js/*.js js/libs/*.js css/*.css svg/cat.svg icon.png package.json
-	zip fabmo-cardboard-app.fma *.html js/*.js js/libs/*.js css/*.css svg/cat.svg icon.png package.json
+fabmo-cardboard-app.fma: clean *.html js/*.js js/libs/*.js css/*.css svg/tux.svg icon.png package.json
+	zip fabmo-cardboard-app.fma *.html js/*.js js/libs/*.js css/*.css svg/tux.svg icon.png package.json
 
 .PHONY: clean
 
