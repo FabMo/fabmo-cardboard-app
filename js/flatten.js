@@ -43,6 +43,8 @@ THE SOFTWARE.
 var svg_paths = [];
 
 
+
+
 (function ()
 {
   var p2s = /,?([achlmqrstvxz]),?/gi;
