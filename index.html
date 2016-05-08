@@ -138,7 +138,7 @@
 </div>
   <div data-role="footer" style="text-align:center;">
 
-    <a href="#pageone" class="ui-btn ui-corner-all ui-shadow ui-icon-carat-r ui-btn-icon-right">SVGode</a>
+    <a href="#pageone" class="ui-btn ui-corner-all ui-shadow ui-icon-carat-r ui-btn-icon-right">CARDBOARD</a>
   </div>
 </div> 
 
@@ -177,7 +177,7 @@ void draw(){
 		
       for(j=0;j<dots[i].length;j++){
 				  if(j==0){
-//              	ellipse(dots[i][0].X,dots[i][0].Y,6,6);
+              	ellipse(dots[i][0].X,dots[i][0].Y,6,6);
 				  	stroke(255,0,0);
 				  }
 
@@ -231,7 +231,7 @@ var tool_diameter
 
 function info(){
 //   console.log(SVG[0])
-   alert(image.name + "\noriginal size\nwidth: " + ((xmax-xmin)).toFixed(2) + "\nheight: " + ((ymax-ymin)).toFixed(2))
+   alert(image.name + "\noriginal size = \nwidth: " + ((xmax-xmin)).toFixed(2) + " px" + "\nheight: " + ((ymax-ymin)).toFixed(2)+ " px") 
 }
 
 function load(){
@@ -358,7 +358,9 @@ for(i=0;i<dots.length;i++){
    xmin = Math.min.apply(Math, xmin)
    ymax = Math.max.apply(Math, ymax)
    ymin = Math.min.apply(Math, ymin)
-   sf2 = ((xmax-xmin)/target_width)
+   //sf2 = ((xmax-xmin)/target_width)
+	sf2 = ((xmax-xmin)/96) //96dpi
+	//sf2=1
 }
 
 
@@ -367,7 +369,9 @@ $( "#resize" ).click(function() {
    target_width = eval(window.prompt("ENTER NEW WIDTH (INCH)")*25.4)
 
    if((target_width!=null)){
+		//sf2=1
       sf2 = ((xmax-xmin)/target_width)
+		//sf2 = ((xmax-xmin)/96) //96dpi
    }
    else{
 		
@@ -475,9 +479,9 @@ for(i=0;i<dots.length;i++){
    		  g+="MI,Z,1,0,5,0.05\n"
            }
            else{
-			  if(j<dots[i].length-1){
-			  g+="MA,"+ (Math.atan2(dots[i][j+1].X-dots[i][j].X,dots[i][j+1].Y-dots[i][j].Y)*(180/Math.PI)).toFixed(3) +"\n"
-			  }	
+			  	if(j<dots[i].length-1){
+			  		g+="MA,"+ (Math.atan2(dots[i][j+1].X-dots[i][j].X,dots[i][j+1].Y-dots[i][j].Y)*(180/Math.PI)).toFixed(3) +"\n"
+			  	}	
            g+="M2,"+(((dots[i][j].X-xmin)/sf2)/25.4).toFixed(3)+","+((((ymax-ymin)/sf2)+((ymin-(dots[i][j].Y))/sf2))/25.4).toFixed(3) + "\n"
            }
    }
