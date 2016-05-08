@@ -177,11 +177,13 @@ void draw(){
 		
       for(j=0;j<dots[i].length;j++){
 				  if(j==0){
-              	ellipse(dots[i][0].X,dots[i][0].Y,6,6);
-				  	stroke(255,0,0);
+				  	//noStroke();
+					//fill(0,255,0,255);
+              	ellipse(dots[i][0].X,dots[i][0].Y,3/sf,3/sf);
+					//endShape();
 				  }
 
-//              
+              fill(0,0,200,110); 
               stroke(0);
               vertex(dots[i][j].X,dots[i][j].Y);
       }
@@ -227,6 +229,7 @@ var ymax
 var sf2 = 1
 var target_width = 101.6
 var tool_diameter
+var retract_angle = 20
 
 
 function info(){
@@ -455,7 +458,7 @@ g+="g0z3\n"
 else if((document.getElementById("code").value)=="sbp"){
 
    g=""
-   g+="'UNITS = INCH"
+   g+="'UNITS = INCH\n"
    g+="JZ,0.25\n"
 	g+="MA,0\n"
    g+="J2,0,0\n"
@@ -472,17 +475,35 @@ for(i=0;i<dots.length;i++){
    for(j=0;j<dots[i].length;j++){
            if(j==0){
 
-			  g+="MA,"+ (Math.atan2(dots[i][j+1].X-dots[i][j].X,dots[i][j+1].Y-dots[i][j].Y)*(180/Math.PI)).toFixed(3) +"\n"
+
 
            g+="J2,"+(((dots[i][j].X-xmin)/sf2)/25.4).toFixed(3)+","+((((ymax-ymin)/sf2)+((ymin-(dots[i][j].Y))/sf2))/25.4).toFixed(3) + "\n" 
+
+			  g+="MA,"+ (Math.atan2(dots[i][j+1].X-dots[i][j].X,dots[i][j+1].Y-dots[i][j].Y)*(180/Math.PI)).toFixed(3) +"\n"
            g+="MZ,-0.125\n"
    		  g+="MI,Z,1,0,5,0.05\n"
            }
            else{
 			  	if(j<dots[i].length-1){
+
+					g+="M2,"+(((dots[i][j].X-xmin)/sf2)/25.4).toFixed(3)+","+((((ymax-ymin)/sf2)+((ymin-(dots[i][j].Y))/sf2))/25.4).toFixed(3) + "\n"
+
+
+					var a = (Math.atan2(dots[i][j].X-dots[i][j-1].X,dots[i][j].Y-dots[i][j-1].Y)*(180/Math.PI)).toFixed(3)
+					var b = (Math.atan2(dots[i][j+1].X-dots[i][j].X,dots[i][j+1].Y-dots[i][j].Y)*(180/Math.PI)).toFixed(3)
+
+					if(Math.abs(b-a)>=retract_angle){
+						g+="MI,Z,1,0,0,0\n"
+						g+="JZ,0.125\n"				
+						g+="MA,"+ (Math.atan2(dots[i][j+1].X-dots[i][j].X,dots[i][j+1].Y-dots[i][j].Y)*(180/Math.PI)).toFixed(3) +"\n"
+           			g+="MZ,-0.125\n"
+   		 			g+="MI,Z,1,0,5,0.05\n"
+					}
+					else{
 			  		g+="MA,"+ (Math.atan2(dots[i][j+1].X-dots[i][j].X,dots[i][j+1].Y-dots[i][j].Y)*(180/Math.PI)).toFixed(3) +"\n"
+					}
 			  	}	
-           g+="M2,"+(((dots[i][j].X-xmin)/sf2)/25.4).toFixed(3)+","+((((ymax-ymin)/sf2)+((ymin-(dots[i][j].Y))/sf2))/25.4).toFixed(3) + "\n"
+           
            }
    }
 
@@ -494,6 +515,7 @@ g+="JZ,0.125\n"
 
 g+="MA,0\n"
 g+="J3,0,0,0.25\n"
+
 
    fabmo.submitJob({
       file : g,
