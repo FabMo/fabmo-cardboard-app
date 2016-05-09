@@ -343,11 +343,35 @@ function svg2pg(){
                dots[shape_no].push({X:svg_paths[i][j][1],Y:svg_paths[i][j][2]})
 					//console.log(svg_paths[i][j][1] + " " + svg_paths[i][j][2])
             }
-//            else if((svg_paths[i][j][0].startsWith('A')==true) || (svg_paths[i][j][0].startsWith('a')==true)){
-//					console.log(i + " " + j)
+            else if((svg_paths[i][j][0].startsWith('A')==true) || (svg_paths[i][j][0].startsWith('a')==true)){
+					//add support for arcs
 //					console.log(svg_paths[i][j])
-               //dots[shape_no].push({X:svg_paths[i][j][1],Y:svg_paths[i][j][2]})
-//            }
+					curve = ""
+               for(j2=0;j2<svg_paths[i][j].length;j2++){
+                  curve +=(svg_paths[i][j][j2]+',')
+               }
+					curve = "M," + (svg_paths[i][j-1][(svg_paths[i][j-1].length)-2]) + ',' + (svg_paths[i][j-1][(svg_paths[i][j-1].length)-1]) + ',' + curve
+					//console.log(curve)
+					//console.log(Snap.path.getPointAtLength(curve, 0).x)
+					if((svg_units==".in") && (svg_units!=undefined)){
+						var l=0
+						while(l<=Snap.path.getTotalLength(curve)){
+							l=l+0.005										
+							dots[shape_no].push({X:Snap.path.getPointAtLength(curve, l).x,Y:Snap.path.getPointAtLength(curve, l).y})
+						}
+					}
+					else{
+               	for(j2=0;j2<(parseInt(Snap.path.getTotalLength(curve)));j2++){
+                  	dots[shape_no].push({X:Snap.path.getPointAtLength(curve, j2).x,Y:Snap.path.getPointAtLength(curve, j2).y})   
+               	}
+					}
+//					for(j2=0;j2<(parseInt(Snap.path.getTotalLength(curve)));j2=j2++){
+//                  dots[shape_no].push({X:Snap.path.getPointAtLength(curve, j2).x,Y:Snap.path.getPointAtLength(curve, j2).y})   
+//						console.log(Snap.path.getPointAtLength(curve, j2).x)
+//               }
+					
+
+            }
 
 
             else if((svg_paths[i][j][0].startsWith('L')==true) || (svg_paths[i][j][0].startsWith('l')==true)){
@@ -359,10 +383,19 @@ function svg2pg(){
                   curve +=(svg_paths[i][j][j2]+',')
                }
                   curve = "M," + (svg_paths[i][j-1][(svg_paths[i][j-1].length)-2]) + ',' + (svg_paths[i][j-1][(svg_paths[i][j-1].length)-1]) + ',' + curve
-                  
-               for(j2=0;j2<(parseInt(Snap.path.getTotalLength(curve)));j2++){
-                  dots[shape_no].push({X:Snap.path.getPointAtLength(curve, j2).x,Y:Snap.path.getPointAtLength(curve, j2).y})   
-               }
+        			//if units !=in          
+					if((svg_units==".in") && (svg_units!=undefined)){
+						var l=0
+						while(l<=Snap.path.getTotalLength(curve)){
+							l=l+0.005										
+							dots[shape_no].push({X:Snap.path.getPointAtLength(curve, l).x,Y:Snap.path.getPointAtLength(curve, l).y})
+						}
+					}
+					else{
+               	for(j2=0;j2<(parseInt(Snap.path.getTotalLength(curve)));j2++){
+                  	dots[shape_no].push({X:Snap.path.getPointAtLength(curve, j2).x,Y:Snap.path.getPointAtLength(curve, j2).y})   
+               	}
+					}
            
             }
    }
@@ -446,7 +479,7 @@ for(i=0;i<dots.length;i++){
 }
 
 
-console.log(dots)
+//console.log(dots)
 }
 
 
