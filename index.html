@@ -69,7 +69,10 @@ SVGElement.prototype.getTransformToElement = SVGElement.prototype.getTransformTo
 </head>
 
 <div id="shape">
+
+
 <svg id="svg" version="1.1" xmlns="http://www.w3.org/2000/svg" height="628" width="726"><polygon points="723,314 543,625.769145 183,625.769145 3,314 183,2.230855 543,2.230855 723,314" fill="white" stroke="black" stroke-width="4"/></svg>
+
 </div>
 
 
@@ -243,7 +246,9 @@ var ymax
 var sf2 = 1
 var target_width = 101.6
 var tool_diameter
-var retract_angle = 20
+var retract_angle = 23
+
+var svg_units
 
 
 function info(){
@@ -282,7 +287,13 @@ function addImg(imgsrc) {
    SVG2 = SVG2.slice((SVG2.indexOf('<svg')),(SVG2.indexOf('</svg>'))+6)
    SVG2 = SVG2.replace('<svg','<svg id="svg"')
 
-   console.log(SVG2)
+
+svg_units = SVG2.match(/width=\"(.*?)\"/);
+svg_units = svg_units[1]
+svg_units = svg_units.replace(/[0-9]/g, '')		
+
+console.log(svg_units)
+//   console.log(SVG2)
 
    $( "#svg" ).replaceWith(SVG2);
    svg2pg()
@@ -297,7 +308,7 @@ function svg2pg(){
    dots = []
    SVG3 = ''
    flatten(document.getElementById('svg'));
-//   console.log(svg_paths)
+ //  console.log(svg_paths)
 
    for(i=0;i<svg_paths.length;i++){
    SVG.push([])
@@ -311,7 +322,6 @@ function svg2pg(){
 
 //   SVG3 = Raphael._pathToAbsolute(SVG3);
 //   console.log(SVG3)
-
 
    svg_paths=[]
    for(i=0;i<SVG.length;i++){
@@ -331,7 +341,15 @@ function svg2pg(){
                dots.push([])
                shape_no=dots.length-1
                dots[shape_no].push({X:svg_paths[i][j][1],Y:svg_paths[i][j][2]})
+					//console.log(svg_paths[i][j][1] + " " + svg_paths[i][j][2])
             }
+//            else if((svg_paths[i][j][0].startsWith('A')==true) || (svg_paths[i][j][0].startsWith('a')==true)){
+//					console.log(i + " " + j)
+//					console.log(svg_paths[i][j])
+               //dots[shape_no].push({X:svg_paths[i][j][1],Y:svg_paths[i][j][2]})
+//            }
+
+
             else if((svg_paths[i][j][0].startsWith('L')==true) || (svg_paths[i][j][0].startsWith('l')==true)){
                dots[shape_no].push({X:svg_paths[i][j][1],Y:svg_paths[i][j][2]})
             }
@@ -342,7 +360,7 @@ function svg2pg(){
                }
                   curve = "M," + (svg_paths[i][j-1][(svg_paths[i][j-1].length)-2]) + ',' + (svg_paths[i][j-1][(svg_paths[i][j-1].length)-1]) + ',' + curve
                   
-               for(j2=0;j2<(parseInt(Snap.path.getTotalLength(curve)));j2=j2+1){
+               for(j2=0;j2<(parseInt(Snap.path.getTotalLength(curve)));j2++){
                   dots[shape_no].push({X:Snap.path.getPointAtLength(curve, j2).x,Y:Snap.path.getPointAtLength(curve, j2).y})   
                }
            
@@ -356,7 +374,7 @@ for(i=0;i<dots.length;i++){
    dots[i].push(dots[i][0])
 }
 
-//console.log(dots)
+//	console.log(dots)
 
    xmin = []
    xmax = []
@@ -370,14 +388,65 @@ for(i=0;i<dots.length;i++){
       ymax.push(dots[i][j].Y)
       ymin.push(dots[i][j].Y)
       }
+		
    }
    xmax = Math.max.apply(Math, xmax)
    xmin = Math.min.apply(Math, xmin)
    ymax = Math.max.apply(Math, ymax)
    ymin = Math.min.apply(Math, ymin)
    //sf2 = ((xmax-xmin)/target_width)
-	sf2 = ((xmax-xmin)/96) //96dpi
+
 	//sf2=1
+//	xmax=500
+//	ymax=200
+   
+
+
+scale()
+//setTimeout("scale()",1000)
+
+
+
+
+
+//	console.log(xmax)
+//	console.log(ymax)
+
+
+	sf2 = ((xmax-xmin)/96) //96dpi
+
+}
+
+
+function scale(){
+
+
+
+for(i=0;i<dots.length;i++){
+   dots[i].push(dots[i][0])
+}
+
+	if((svg_units==".in") && (svg_units!=undefined)){
+
+	for(i=0;i<dots.length;i++){
+		for(j=0;j<dots[i].length;j++){
+
+//	console.log(dots[i][j].X*96)
+	dots[i][j] = ({X:dots[i][j].X*96,Y:dots[i][j].Y*96})
+	
+		}
+	
+	}
+	
+	xmin *= 96
+	xmax *= 96
+	ymin *= 96
+	ymax *= 96
+
+}
+
+
+console.log(dots)
 }
 
 
@@ -507,7 +576,7 @@ for(i=0;i<dots.length;i++){
 					var b = (Math.atan2(dots[i][j+1].X-dots[i][j].X,dots[i][j+1].Y-dots[i][j].Y)*(180/Math.PI)).toFixed(3)
 
 					if(Math.abs(b-a)>=retract_angle){
-						g+="MI,Z,1,0,0,0\n"
+						g+="MI,0\n"
 						g+="JZ,0.125\n"				
 						g+="MA,"+ (Math.atan2(dots[i][j+1].X-dots[i][j].X,dots[i][j+1].Y-dots[i][j].Y)*(180/Math.PI)).toFixed(3) +"\n"
            			g+="MZ,-0.125\n"
@@ -521,7 +590,7 @@ for(i=0;i<dots.length;i++){
            }
    }
 
-g+="MI,Z,1,0,0,0\n"
+g+="MI,0\n"
 g+="JZ,0.125\n"
 
 
