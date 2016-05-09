@@ -220,7 +220,7 @@ void draw(){
 
 textSize(14/sf);
 
-text((((xmax-xmin)/sf2)/25.4).toFixed(2) + ' x ' + (((ymax-ymin)/sf2)/25.4).toFixed(2) + ' \"',(xmax+5),(ymax));
+text((((xmax-xmin))/96).toFixed(2) + ' x ' + (((ymax-ymin))/96).toFixed(2) + ' \"',(xmax+5),(ymax));
 
 
 fill(255,255,0);
@@ -289,8 +289,16 @@ function addImg(imgsrc) {
 
 
 svg_units = SVG2.match(/width=\"(.*?)\"/);
-svg_units = svg_units[1]
-svg_units = svg_units.replace(/[0-9]/g, '')		
+
+if(svg_units==null){
+	svg_units = ".px"
+
+}
+else{
+	svg_units = svg_units[1]
+	svg_units = svg_units.replace(/[0-9]/g, '')
+}
+		
 
 console.log(svg_units)
 //   console.log(SVG2)
