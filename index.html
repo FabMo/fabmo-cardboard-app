@@ -11,7 +11,7 @@
 SVGElement.prototype.getTransformToElement = SVGElement.prototype.getTransformToElement || function(toElement) {
     return toElement.getScreenCTM().inverse().multiply(this.getScreenCTM());
 };
-//
+
 </script>
 
 <script src="js/flatten.js"></script>
@@ -21,17 +21,9 @@ SVGElement.prototype.getTransformToElement = SVGElement.prototype.getTransformTo
     <script type="text/javascript">
         var fabmo = new FabMoDashboard();
     </script>
-<script src="js/control.js"></script>
-<script src="js/config.js"></script>
 <script src="js/jquery.mobile-1.4.5.js"></script>
-<script src="js/processing.min.js"></script>
-<script src="js/snap.svg-min.js"></script>
-<script src="js/clipper.js"></script>
-
+<!--<script src="js/processing.min.js"></script>-->
 <script src="js/raphael-min.js"></script>
-
-
-
 
 <style>
 
@@ -64,17 +56,14 @@ SVGElement.prototype.getTransformToElement = SVGElement.prototype.getTransformTo
 
 }
 
-
 </style>
 </head>
 
 <div id="shape">
 
-
 <svg id="svg" version="1.1" xmlns="http://www.w3.org/2000/svg" height="628" width="726"><polygon points="723,314 543,625.769145 183,625.769145 3,314 183,2.230855 543,2.230855 723,314" fill="white" stroke="black" stroke-width="4"/></svg>
 
 </div>
-
 
 <body onload="load()">
 
@@ -96,9 +85,9 @@ SVGElement.prototype.getTransformToElement = SVGElement.prototype.getTransformTo
   <div data-role="main" class="ui-content">
 
 
+	<canvas id="myCanvas"></canvas>
 
-
-    <canvas id="2D" tabindex="1"> </canvas>
+<!--    <canvas id="2D" tabindex="1"> </canvas> -->
 
   </div>
   <div data-role="footer" style="text-align:center;">
@@ -145,8 +134,9 @@ SVGElement.prototype.getTransformToElement = SVGElement.prototype.getTransformTo
       <fieldset class="ui-field-contain">
         <label for="material">FILE TYPE</label>
         <select name="code" id="code">
+          <option value="gcode">GCODE</option>
           <option value="sbp" selected>SBP</option>
-<!--          <option value="gcode">GCODE</option> -->
+
         </select>
       </fieldset>
     </form>
@@ -159,79 +149,56 @@ SVGElement.prototype.getTransformToElement = SVGElement.prototype.getTransformTo
   </div>
 </div> 
 
+<script>
 
-<script type="application/processing" data-processing-target="2D">
-
-
-
-int sf = 1;
+var sf = 1
 
 
-void setup(){
-   size($(window).innerWidth()-30,$(window).innerHeight()-180);
-   background(235);
-   noFill();
-   smooth();  
-   frameRate(2);
-   strokeCap(ROUND);
-   strokeWeight(1);
-   textFont(createFont("Arial",6));
-}
+function draw(){
 
-void draw(){
-   background(235);
-   size($(window).innerWidth()-30,$(window).innerHeight()-180);
-   sf=(height/((ymax-ymin)+20))
-   strokeWeight(1);
-   scale(sf);
-   translate(-xmin+10,-ymin+10);
-   stroke(0);
-   fill(0,0,200,110);
+c = document.getElementById("myCanvas")
+ctx = c.getContext("2d")
+	
+ctx.canvas.height = $(window).height()-180
+ctx.canvas.width = $(window).width()-30
+
+console.log(ctx.canvas.height)
+
+ctx.clearRect(0,0,ctx.canvas.width,ctx.canvas.height);
+ctx.fillStyle = "#E0E0F8"
+ctx.lineWidth = 1
+ctx.fillStyle = "#E0E0F8"
+ctx.strokeStyle = "#333"
+
+sf=(ctx.canvas.height/((ymax-ymin)+20))
+
+ctx.translate((-xmin*sf)+2,(-ymin*sf)+2)
+
+ctx.fillRect((xmin*sf)-2,(ymin*sf)-2,((xmax-xmin)*sf)+4,((ymax-ymin)*sf)+4)
 
    for(i=0;i<dots.length;i++){
-   beginShape();
+   ctx.beginPath()
 
 		
       for(j=0;j<dots[i].length;j++){
-				  if(j==0){
-				  	//noStroke();
-					//fill(0,255,0,255);
-              	ellipse(dots[i][0].X,dots[i][0].Y,3/sf,3/sf);
-					//endShape();
-				  }
-
-              fill(0,0,200,110); 
-              stroke(0);
-              vertex(dots[i][j].X,dots[i][j].Y);
+              ctx.lineTo(dots[i][j].X*sf,dots[i][j].Y*sf)
       }
-   endShape();
+   ctx.stroke()
    }
 
-   stroke(0,80);
+	ctx.fillStyle = "#000"
+	ctx.font = "14px Arial"
+	ctx.fillText( (((xmax-xmin)/sf2)/96).toFixed(2) + " x " + (((ymax-ymin)/sf2)/96).toFixed(2) + "\"",(xmax*sf)+5,ymax*sf)
 
-   noFill();
-   beginShape();
-      vertex(xmin,ymin);
-      vertex(xmax,ymin);
-      vertex(xmax,ymax);
-      vertex(xmin,ymax);
-      vertex(xmin,ymin);
-   endShape();
-
-textSize(14/sf);
-
-text((((xmax-xmin))/96).toFixed(2) + ' x ' + (((ymax-ymin))/96).toFixed(2) + ' \"',(xmax+5),(ymax));
-
-
-fill(255,255,0);
-ellipse(xmin,ymax,5,5);
 
 }
 
+//TODO
 
-</script>
+//sawtooth profile
+//processing to canvas
+//replace alert with fabmo.notify
 
-<script>
 
 var g = ""
 var SVG = []
@@ -250,10 +217,16 @@ var retract_angle = 23
 
 var svg_units
 
+var job_info 
 
 function info(){
 //   console.log(SVG[0])
-   alert(image.name + "\noriginal size = \nwidth: " + ((xmax-xmin)).toFixed(2) + " px" + "\nheight: " + ((ymax-ymin)).toFixed(2)+ " px") 
+
+alert(image.name + "\noriginal size = \nwidth: " + ((xmax-xmin)).toFixed(2) + " px" + "\nheight: " + ((ymax-ymin)).toFixed(2)+ " px") 
+
+//job_info = "hello world"
+//fabmo.notify('info',test)
+
 }
 
 function load(){
@@ -268,7 +241,7 @@ function startRead() {
             getAsImage(image);
         }
         else {
-              alert(image.name + " IS NOT A SVG FILE");
+//              alert(image.name + " IS NOT A SVG FILE");
         }
     }
 }
@@ -284,7 +257,14 @@ function addImg(imgsrc) {
    SVG2 = imgsrc.target.result
    SVG2 = SVG2.slice(SVG2.indexOf(",")+1)
    SVG2 = window.atob(SVG2)
-   SVG2 = SVG2.slice((SVG2.indexOf('<svg')),(SVG2.indexOf('</svg>'))+6)
+
+//	console.log(SVG2)
+
+   SVG2 = SVG2.slice((SVG2.indexOf('<svg')),(SVG2.indexOf('</svg'))+6)
+
+// 
+	console.log(SVG2)
+
    SVG2 = SVG2.replace('<svg','<svg id="svg"')
 
 
@@ -300,7 +280,7 @@ else{
 }
 		
 
-console.log(svg_units)
+//console.log(svg_units)
 //   console.log(SVG2)
 
    $( "#svg" ).replaceWith(SVG2);
@@ -316,7 +296,7 @@ function svg2pg(){
    dots = []
    SVG3 = ''
    flatten(document.getElementById('svg'));
- //  console.log(svg_paths)
+//   console.log(svg_paths)
 
    for(i=0;i<svg_paths.length;i++){
    SVG.push([])
@@ -363,14 +343,14 @@ function svg2pg(){
 					//console.log(Snap.path.getPointAtLength(curve, 0).x)
 					if((svg_units==".in") && (svg_units!=undefined)){
 						var l=0
-						while(l<=Snap.path.getTotalLength(curve)){
+						while(l<=Raphael.getTotalLength(curve)){
 							l=l+0.005										
-							dots[shape_no].push({X:Snap.path.getPointAtLength(curve, l).x,Y:Snap.path.getPointAtLength(curve, l).y})
+							dots[shape_no].push({X:Raphael.getPointAtLength(curve, l).x,Y:Raphael.getPointAtLength(curve, l).y})
 						}
 					}
 					else{
-               	for(j2=0;j2<(parseInt(Snap.path.getTotalLength(curve)));j2++){
-                  	dots[shape_no].push({X:Snap.path.getPointAtLength(curve, j2).x,Y:Snap.path.getPointAtLength(curve, j2).y})   
+               	for(j2=0;j2<(parseInt(Raphael.getTotalLength(curve)));j2++){
+                  	dots[shape_no].push({X:Raphael.getPointAtLength(curve, j2).x,Y:Raphael.getPointAtLength(curve, j2).y})   
                	}
 					}
 //					for(j2=0;j2<(parseInt(Snap.path.getTotalLength(curve)));j2=j2++){
@@ -394,14 +374,14 @@ function svg2pg(){
         			//if units !=in          
 					if((svg_units==".in") && (svg_units!=undefined)){
 						var l=0
-						while(l<=Snap.path.getTotalLength(curve)){
+						while(l<=Raphael.getTotalLength(curve)){
 							l=l+0.005										
-							dots[shape_no].push({X:Snap.path.getPointAtLength(curve, l).x,Y:Snap.path.getPointAtLength(curve, l).y})
+							dots[shape_no].push({X:Raphael.getPointAtLength(curve, l).x,Y:Raphael.getPointAtLength(curve, l).y})
 						}
 					}
 					else{
-               	for(j2=0;j2<(parseInt(Snap.path.getTotalLength(curve)));j2++){
-                  	dots[shape_no].push({X:Snap.path.getPointAtLength(curve, j2).x,Y:Snap.path.getPointAtLength(curve, j2).y})   
+               	for(j2=0;j2<(parseInt(Raphael.getTotalLength(curve)));j2++){
+                  	dots[shape_no].push({X:Raphael.getPointAtLength(curve, j2).x,Y:Raphael.getPointAtLength(curve, j2).y})   
                	}
 					}
            
@@ -446,15 +426,13 @@ for(i=0;i<dots.length;i++){
 scale()
 //setTimeout("scale()",1000)
 
-
-
-
-
 //	console.log(xmax)
 //	console.log(ymax)
 
+sf2 = 1
 
-	sf2 = ((xmax-xmin)/96) //96dpi
+draw()
+//	sf2 = ((xmax-xmin)/96) //inches
 
 }
 
@@ -484,6 +462,9 @@ for(i=0;i<dots.length;i++){
 	ymin *= 96
 	ymax *= 96
 
+
+
+
 }
 
 
@@ -493,20 +474,22 @@ for(i=0;i<dots.length;i++){
 
 $( "#resize" ).click(function() {
 
-   target_width = eval(window.prompt("ENTER NEW WIDTH (INCH)")*25.4)
+   target_width = eval(window.prompt("ENTER NEW WIDTH (INCH)")*96)
 
-   if((target_width!=null)){
+   if((target_width!=0)){
 		//sf2=1
       sf2 = ((xmax-xmin)/target_width)
 		//sf2 = ((xmax-xmin)/96) //96dpi
    }
-   else{
-		
-      sf2 = sf2
-   }
-	//console.log(target_width)
+	
+	
    
 });
+
+
+$(window).resize(function(){
+	draw()
+}); 
 
 
 // toggle full screen
@@ -601,7 +584,7 @@ for(i=0;i<dots.length;i++){
 
 
 
-           g+="J2,"+(((dots[i][j].X-xmin)/sf2)/25.4).toFixed(3)+","+((((ymax-ymin)/sf2)+((ymin-(dots[i][j].Y))/sf2))/25.4).toFixed(3) + "\n" 
+           g+="J2,"+(((dots[i][j].X-xmin)/sf2)/96).toFixed(3)+","+((((ymax-ymin)/sf2)+((ymin-(dots[i][j].Y))/sf2))/96).toFixed(3) + "\n" 
 
 			  g+="MA,"+ (Math.atan2(dots[i][j+1].X-dots[i][j].X,dots[i][j+1].Y-dots[i][j].Y)*(180/Math.PI)).toFixed(3) +"\n"
            g+="MZ,-0.125\n"
@@ -610,7 +593,7 @@ for(i=0;i<dots.length;i++){
            else{
 			  	if(j<dots[i].length-1){
 
-					g+="M2,"+(((dots[i][j].X-xmin)/sf2)/25.4).toFixed(3)+","+((((ymax-ymin)/sf2)+((ymin-(dots[i][j].Y))/sf2))/25.4).toFixed(3) + "\n"
+					g+="M2,"+(((dots[i][j].X-xmin)/sf2)/96).toFixed(3)+","+((((ymax-ymin)/sf2)+((ymin-(dots[i][j].Y))/sf2))/96).toFixed(3) + "\n"
 
 
 					var a = (Math.atan2(dots[i][j].X-dots[i][j-1].X,dots[i][j].Y-dots[i][j-1].Y)*(180/Math.PI)).toFixed(3)
@@ -645,7 +628,7 @@ g+="J3,0,0,0.25\n"
       file : g,
       filename : image.name + '.sbp',
       name : image.name,
-      description : (((xmax-xmin)/sf2).toFixed(2))+" x "+(((ymax-ymin)/sf2).toFixed(2))+" mm"
+      description : ((((xmax-xmin)/sf2)/96).toFixed(2))+" x "+((((ymax-ymin)/sf2)/96).toFixed(2))+" \""
    });
 
 
