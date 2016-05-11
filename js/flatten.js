@@ -40,10 +40,9 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
+
+
 var svg_paths = [];
-
-
-
 
 (function ()
 {
@@ -61,13 +60,12 @@ var svg_paths = [];
   // Returns: no return value
   function flatten(elem, toCubics, toAbsolute, rectAsArgs, dec)
   {
-//    console.log("test")
     if (!elem) return;
     if (typeof (rectAsArgs) == 'undefined') rectAsArgs = false;
     if (typeof (toCubics) == 'undefined') toCubics = false;
     if (typeof (toAbsolute) == 'undefined') toAbsolute = false;
     if (typeof (dec) == 'undefined') dec = false;
-    
+
     if (elem && elem.children && elem.children.length)
     {
       for (var i = 0, ilen = elem.children.length; i < ilen; i++)
@@ -280,7 +278,6 @@ var svg_paths = [];
     if (toAbsolute) newcoords = pathToAbsolute(newcoords);
     path_elem.setAttribute('d', convertToString(newcoords));
     path_elem.removeAttribute('transform');
-
   }
 
   // Converts all shapes to path retaining attributes.
@@ -306,7 +303,6 @@ var svg_paths = [];
       var attrName = attrs[i];
       var attrValue = oldElem.getAttribute(attrName);
       if (attrValue) path.setAttribute(attrName, attrValue);
-
     }
 
     var d = '';
@@ -624,7 +620,6 @@ var svg_paths = [];
 //    console.log(res)
     svg_paths.push(res);
     return res;
-
   };
   var paths = function (ps)
   {
@@ -1193,6 +1188,5 @@ var svg_paths = [];
 
   // Export function
   window.flatten = flatten;
-
 
 })();
