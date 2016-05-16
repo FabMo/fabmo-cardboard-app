@@ -4,14 +4,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" charset="utf-8"/>
 <link rel="stylesheet" href="css/jquery.mobile-1.4.5.css">
 
-
-
 <script>
-
 SVGElement.prototype.getTransformToElement = SVGElement.prototype.getTransformToElement || function(toElement) {
     return toElement.getScreenCTM().inverse().multiply(this.getScreenCTM());
 };
-
 </script>
 
 <script src="js/flatten.js"></script>
@@ -24,7 +20,7 @@ SVGElement.prototype.getTransformToElement = SVGElement.prototype.getTransformTo
 <script src="js/jquery.mobile-1.4.5.js"></script>
 <!--<script src="js/processing.min.js"></script>-->
 <script src="js/raphael-min.js"></script>
-
+<script src="js/simplify.js"></script>
 <style>
 
 #loadfont {
@@ -69,14 +65,18 @@ SVGElement.prototype.getTransformToElement = SVGElement.prototype.getTransformTo
 
 <div data-role="page" id="pageone">
   <div data-role="header">
+
+<!-- 
       <a href="#" class="ui-btn ui-corner-all ui-shadow ui-icon-eye ui-btn-icon-left" onclick="toggleFullScreen();">FULLSCREEN</a>
-      <a href="#" class="ui-btn ui-corner-all ui-shadow ui-icon-info ui-btn-icon-left" onclick="info();">JOB INFO</a> 
-    <h1>LOAD SVG</h1>
+     <a href="#" class="ui-btn ui-corner-all ui-shadow ui-icon-info ui-btn-icon-left" onclick="info();">JOB INFO</a> 
+-->
+
+    <h1>CARDBOARD</h1>
 
     <div data-role="navbar">
       <ul>
         <li><a href="#pagezero">SETUP</a></li>
-        <li><a href="#pageone" onclick="" class="ui-btn-active ui-state-persist">SVGcode</a></li>
+        <li><a href="#pageone" onclick="" class="ui-btn-active ui-state-persist">LOAD SVG</a></li>
 
       </ul>
     </div>
@@ -84,22 +84,19 @@ SVGElement.prototype.getTransformToElement = SVGElement.prototype.getTransformTo
   
   <div data-role="main" class="ui-content">
 
-
 	<canvas id="myCanvas"></canvas>
-
-<!--    <canvas id="2D" tabindex="1"> </canvas> -->
 
   </div>
   <div data-role="footer" style="text-align:center;">
-
-
 
     <span class="ui-btn ui-corner-all ui-shadow ui-icon-plus ui-btn-icon-left" id="loadfont" onchange="startRead()">
        <span>LOAD SVG</span>
        <input type="file" name="files[]" id="file" multiple data-role="none"/>
     </span>
 
+<!--
 <a href="#" id="resize" class="ui-btn ui-corner-all ui-shadow ui-icon-gear ui-btn-icon-left">RESIZE</a>
+-->
 
       <a href="#" class="ui-btn ui-corner-all ui-shadow ui-icon-action ui-btn-icon-right" onclick="make();">SUBMIT JOB</a>
   </div>
@@ -108,13 +105,17 @@ SVGElement.prototype.getTransformToElement = SVGElement.prototype.getTransformTo
 
 <div data-role="page" id="pagezero">
   <div data-role="header">
+
+<!--
     <a href="#" class="ui-btn ui-corner-all ui-shadow ui-icon-eye ui-btn-icon-left" onclick="toggleFullScreen();">FULLSCREEN</a>
+-->
+
     <h1>SETUP</h1>
 
     <div data-role="navbar">
       <ul>
         <li><a href="#pagezero" class="ui-btn-active ui-state-persist">SETUP</a></li>
-        <li><a href="#pageone" onclick="">CARDBOARD</a></li>
+        <li><a href="#pageone" onclick="">LOAD SVG</a></li>
 
       </ul>
     </div>
@@ -134,25 +135,23 @@ SVGElement.prototype.getTransformToElement = SVGElement.prototype.getTransformTo
       <fieldset class="ui-field-contain">
         <label for="material">FILE TYPE</label>
         <select name="code" id="code">
-          <option value="gcode">GCODE</option>
-          <option value="sbp" selected>SBP</option>
+          <option value="gcode" selected>GCODE</option>
+          <option value="sbp">SBP</option>
 
         </select>
       </fieldset>
     </form>
 
-
 </div>
   <div data-role="footer" style="text-align:center;">
 
-    <a href="#pageone" class="ui-btn ui-corner-all ui-shadow ui-icon-carat-r ui-btn-icon-right">CARDBOARD</a>
+    <a href="#pageone" class="ui-btn ui-corner-all ui-shadow ui-icon-carat-r ui-btn-icon-right">LOAD SVG</a>
   </div>
 </div> 
 
 <script>
 
 var sf = 1
-
 
 function draw(){
 
@@ -162,30 +161,59 @@ ctx = c.getContext("2d")
 ctx.canvas.height = $(window).height()-180
 ctx.canvas.width = $(window).width()-30
 
-console.log(ctx.canvas.height)
-
 ctx.clearRect(0,0,ctx.canvas.width,ctx.canvas.height);
 ctx.fillStyle = "#E0E0F8"
 ctx.lineWidth = 1
 ctx.fillStyle = "#E0E0F8"
 ctx.strokeStyle = "#333"
 
-sf=(ctx.canvas.height/((ymax-ymin)+20))
+sf=((ctx.canvas.height-5)/(ymax-ymin))
 
-ctx.translate((-xmin*sf)+2,(-ymin*sf)+2)
+ctx.translate((-xmin*sf)+5,(-ymin*sf)+2)
 
+ctx.beginPath()
 ctx.fillRect((xmin*sf)-2,(ymin*sf)-2,((xmax-xmin)*sf)+4,((ymax-ymin)*sf)+4)
+ctx.fill()
 
    for(i=0;i<dots.length;i++){
    ctx.beginPath()
 
 		
       for(j=0;j<dots[i].length;j++){
-              ctx.lineTo(dots[i][j].X*sf,dots[i][j].Y*sf)
+              //ctx.lineTo(dots[i][j].x*sf,dots[i][j].y*sf)
       }
    ctx.stroke()
    }
 
+
+   for(i=0;i<saw.length;i++){
+   ctx.beginPath()
+
+		
+      for(j=0;j<saw[i].length;j++){
+              //ctx.lineTo(saw[i][j].x*sf,saw[i][j].y*sf)
+      }
+   ctx.stroke()
+   }
+
+
+   for(i=0;i<saw.length;i++){
+   
+      for(j=0;j<saw[i].length;j++){
+					//if(dots[i][j].r==true){
+					ctx.beginPath()
+				   	//ctx.moveTo(dots[i][j].x*sf,dots[i][j].y*sf)
+		    			//ctx.arc(dots[i][j].x*sf,dots[i][j].y*sf,(1),0,2*Math.PI)
+						//console.log(i + " " + j)
+				   	ctx.moveTo(saw[i][j].x*sf,saw[i][j].y*sf)
+		    			ctx.arc(saw[i][j].x*sf,saw[i][j].y*sf,(1),0,2*Math.PI)
+   				ctx.stroke()
+					//}
+      }
+
+	}
+
+	ctx.beginPath()
 	ctx.fillStyle = "#000"
 	ctx.font = "14px Arial"
 	ctx.fillText( (((xmax-xmin)/sf2)/96).toFixed(2) + " x " + (((ymax-ymin)/sf2)/96).toFixed(2) + "\"",(xmax*sf)+5,ymax*sf)
@@ -194,11 +222,12 @@ ctx.fillRect((xmin*sf)-2,(ymin*sf)-2,((xmax-xmin)*sf)+4,((ymax-ymin)*sf)+4)
 }
 
 //TODO
-
 //sawtooth profile
 //processing to canvas
 //replace alert with fabmo.notify
-
+//add options depth
+//remove size prompt
+//
 
 var g = ""
 var SVG = []
@@ -213,14 +242,16 @@ var ymax
 var sf2 = 1
 var target_width = 101.6
 var tool_diameter
-var retract_angle = 23
+var retract_angle = 20
+
+var SVG_saw = []
+var saw = []
 
 var svg_units
 
 var job_info 
 
 function info(){
-//   console.log(SVG[0])
 
 alert(image.name + "\noriginal size = \nwidth: " + ((xmax-xmin)).toFixed(2) + " px" + "\nheight: " + ((ymax-ymin)).toFixed(2)+ " px") 
 
@@ -258,15 +289,9 @@ function addImg(imgsrc) {
    SVG2 = SVG2.slice(SVG2.indexOf(",")+1)
    SVG2 = window.atob(SVG2)
 
-//	console.log(SVG2)
-
    SVG2 = SVG2.slice((SVG2.indexOf('<svg')),(SVG2.indexOf('</svg'))+6)
 
-// 
-	console.log(SVG2)
-
    SVG2 = SVG2.replace('<svg','<svg id="svg"')
-
 
 svg_units = SVG2.match(/width=\"(.*?)\"/);
 
@@ -278,15 +303,10 @@ else{
 	svg_units = svg_units[1]
 	svg_units = svg_units.replace(/[0-9]/g, '')
 }
-		
-
-//console.log(svg_units)
-//   console.log(SVG2)
 
    $( "#svg" ).replaceWith(SVG2);
    svg2pg()
 }
-
 
 function svg2pg(){
 
@@ -296,29 +316,22 @@ function svg2pg(){
    dots = []
    SVG3 = ''
    flatten(document.getElementById('svg'));
-//   console.log(svg_paths)
 
    for(i=0;i<svg_paths.length;i++){
    SVG.push([])
       for(j=0;j<svg_paths[i].length;j++){
 
       SVG[i]+=(svg_paths[i][j])
-//      SVG3 +=svg_paths[i][j]
 
       }
    }
-
-//   SVG3 = Raphael._pathToAbsolute(SVG3);
-//   console.log(SVG3)
 
    svg_paths=[]
    for(i=0;i<SVG.length;i++){
       svg_paths[i]=Raphael._pathToAbsolute(SVG[i]);    
    }
-//   console.log(svg_paths)
-   SVG=[]
 
-//   svg_paths.push(SVG3)
+   SVG=[]
 
    var curve
    var shape_no = 0
@@ -328,42 +341,12 @@ function svg2pg(){
             if((svg_paths[i][j][0].startsWith('M')==true) || (svg_paths[i][j][0].startsWith('m')==true)){
                dots.push([])
                shape_no=dots.length-1
-               dots[shape_no].push({X:svg_paths[i][j][1],Y:svg_paths[i][j][2]})
+               dots[shape_no].push({x:svg_paths[i][j][1],y:svg_paths[i][j][2]})
 					//console.log(svg_paths[i][j][1] + " " + svg_paths[i][j][2])
             }
-            else if((svg_paths[i][j][0].startsWith('A')==true) || (svg_paths[i][j][0].startsWith('a')==true)){
-					//add support for arcs
-//					console.log(svg_paths[i][j])
-					curve = ""
-               for(j2=0;j2<svg_paths[i][j].length;j2++){
-                  curve +=(svg_paths[i][j][j2]+',')
-               }
-					curve = "M," + (svg_paths[i][j-1][(svg_paths[i][j-1].length)-2]) + ',' + (svg_paths[i][j-1][(svg_paths[i][j-1].length)-1]) + ',' + curve
-					//console.log(curve)
-					//console.log(Snap.path.getPointAtLength(curve, 0).x)
-					if((svg_units==".in") && (svg_units!=undefined)){
-						var l=0
-						while(l<=Raphael.getTotalLength(curve)){
-							l=l+0.005										
-							dots[shape_no].push({X:Raphael.getPointAtLength(curve, l).x,Y:Raphael.getPointAtLength(curve, l).y})
-						}
-					}
-					else{
-               	for(j2=0;j2<(parseInt(Raphael.getTotalLength(curve)));j2++){
-                  	dots[shape_no].push({X:Raphael.getPointAtLength(curve, j2).x,Y:Raphael.getPointAtLength(curve, j2).y})   
-               	}
-					}
-//					for(j2=0;j2<(parseInt(Snap.path.getTotalLength(curve)));j2=j2++){
-//                  dots[shape_no].push({X:Snap.path.getPointAtLength(curve, j2).x,Y:Snap.path.getPointAtLength(curve, j2).y})   
-//						console.log(Snap.path.getPointAtLength(curve, j2).x)
-//               }
-					
-
-            }
-
 
             else if((svg_paths[i][j][0].startsWith('L')==true) || (svg_paths[i][j][0].startsWith('l')==true)){
-               dots[shape_no].push({X:svg_paths[i][j][1],Y:svg_paths[i][j][2]})
+               dots[shape_no].push({x:svg_paths[i][j][1],y:svg_paths[i][j][2]})
             }
             else if((svg_paths[i][j][0].startsWith('Z')==false) && (svg_paths[i][j][0].startsWith('z')==false)){
                curve = ""
@@ -372,30 +355,25 @@ function svg2pg(){
                }
                   curve = "M," + (svg_paths[i][j-1][(svg_paths[i][j-1].length)-2]) + ',' + (svg_paths[i][j-1][(svg_paths[i][j-1].length)-1]) + ',' + curve
         			//if units !=in          
-					if((svg_units==".in") && (svg_units!=undefined)){
-						var l=0
-						while(l<=Raphael.getTotalLength(curve)){
-							l=l+0.005										
-							dots[shape_no].push({X:Raphael.getPointAtLength(curve, l).x,Y:Raphael.getPointAtLength(curve, l).y})
+					if((svg_units==".in")){
+						l=0
+						var length = Raphael.getTotalLength(curve)
+						while(l<Raphael.getTotalLength(curve)){
+							l=l+0.01									
+							dots[shape_no].push({x:Raphael.getPointAtLength(curve, l).x,y:Raphael.getPointAtLength(curve, l).y})
 						}
 					}
 					else{
-               	for(j2=0;j2<(parseInt(Raphael.getTotalLength(curve)));j2++){
-                  	dots[shape_no].push({X:Raphael.getPointAtLength(curve, j2).x,Y:Raphael.getPointAtLength(curve, j2).y})   
+               	for(l=1;l<(parseInt(Raphael.getTotalLength(curve)));l++){
+                  	dots[shape_no].push({x:Raphael.getPointAtLength(curve, l).x,y:Raphael.getPointAtLength(curve, l).y})   
                	}
 					}
            
             }
-   }
+   	}
 
    }
 
-//close all paths
-for(i=0;i<dots.length;i++){
-   dots[i].push(dots[i][0])
-}
-
-//	console.log(dots)
 
    xmin = []
    xmax = []
@@ -404,10 +382,10 @@ for(i=0;i<dots.length;i++){
 
    for(i=0;i<dots.length;i++){
       for(j=0;j<dots[i].length;j++){
-      xmax.push(dots[i][j].X)
-      xmin.push(dots[i][j].X)
-      ymax.push(dots[i][j].Y)
-      ymin.push(dots[i][j].Y)
+      xmax.push(dots[i][j].x)
+      xmin.push(dots[i][j].x)
+      ymax.push(dots[i][j].y)
+      ymin.push(dots[i][j].y)
       }
 		
    }
@@ -417,17 +395,7 @@ for(i=0;i<dots.length;i++){
    ymin = Math.min.apply(Math, ymin)
    //sf2 = ((xmax-xmin)/target_width)
 
-	//sf2=1
-//	xmax=500
-//	ymax=200
-   
-
-
 scale()
-//setTimeout("scale()",1000)
-
-//	console.log(xmax)
-//	console.log(ymax)
 
 sf2 = 1
 
@@ -439,7 +407,7 @@ draw()
 
 function scale(){
 
-
+//console.log(dots)
 
 for(i=0;i<dots.length;i++){
    dots[i].push(dots[i][0])
@@ -450,8 +418,8 @@ for(i=0;i<dots.length;i++){
 	for(i=0;i<dots.length;i++){
 		for(j=0;j<dots[i].length;j++){
 
-//	console.log(dots[i][j].X*96)
-	dots[i][j] = ({X:dots[i][j].X*96,Y:dots[i][j].Y*96})
+//	console.log(dots[i][j].x*96)
+	dots[i][j] = ({x:dots[i][j].x*96,y:dots[i][j].y*96})
 	
 		}
 	
@@ -468,7 +436,14 @@ for(i=0;i<dots.length;i++){
 }
 
 
-//console.log(dots)
+for(i=0;i<dots.length;i++){
+	  dots[i]=simplify(dots[i], 0.1, true)
+}
+
+
+
+sawtooth()
+
 }
 
 
@@ -514,114 +489,454 @@ function toggleFullScreen() {
   }
 }
 
+function sawtooth(){
+
+var a 
+var ia
+var b
+var ib 
+var d  
+
+for(i=0;i<dots.length;i++){
+
+	a = (parseFloat((Math.atan2(dots[i][1].x-dots[i][0].x,dots[i][1].y-dots[i][0].y)*(180/Math.PI)).toFixed(2)))
+	dots[i][0].a = a
+   dots[i][0].r = true
+	dots[i][dots[i].length-1].r = true
+
+   for(j=1;j<dots[i].length-1;j++){
+			b = a
+			a = (parseFloat((Math.atan2(dots[i][j+1].x-dots[i][j].x,dots[i][j+1].y-dots[i][j].y)*(180/Math.PI)).toFixed(2)))
+			
+
+			if(a<=0){
+				ia = (a + 360)
+			}
+			else{
+				ia = (a - 360)
+			}
+			
+			if( Math.abs(ia-b)<=(Math.abs(a-b)) ){
+				//console.log(ia)
+				a = ia
+				
+			}
+			
+
+			if (Math.abs(360-b)+a<Math.abs(b-a)){
+				d = Math.abs(360-b)+a
+			}			
+			else{
+				d = Math.abs(b - a)
+			}
+			//d = Math.abs(b - a)			
+			
+
+
+			
+			if(d>(retract_angle) ){
+
+			dots[i][j].r = true				
+			
+			}
+			else{
+			dots[i][j].r = false
+			}
+
+         dots[i][j].a = a
+			//dots[i][j].d = d
+			
+   	}
+}
+
+SVG_saw = []
+
+
+var paths = []
+var index = 0
+var start = 0
+//console.log(dots)
+
+
+for(i=0;i<dots.length;i++){
+
+//SVG_saw.push([[]])
+start = index
+
+	for(j=0;j<dots[i].length-1;j++){
+	
+	if((dots[i][j].r==true)&&(j==0)){
+	//SVG_saw[i].push("hi")	
+	SVG_saw.push("M"+(dots[i][j].x).toFixed(3)+" "+(dots[i][j].y).toFixed(3))
+	index++
+	SVG_saw[SVG_saw.length-1]+=(" L "+(dots[i][j+1].x).toFixed(3)+" "+(dots[i][j+1].y).toFixed(3))
+	}
+
+	
+	else if((dots[i][j].r==true)&&(j!=0)){
+	
+	SVG_saw[SVG_saw.length-1]+=(" L "+(dots[i][j].x).toFixed(3)+" "+(dots[i][j].y).toFixed(3))
+	
+	SVG_saw.push("M"+(dots[i][j].x).toFixed(3)+" "+(dots[i][j].y).toFixed(3))
+	index++	
+	SVG_saw[SVG_saw.length-1]+=(" L "+(dots[i][j+1].x).toFixed(3)+" "+(dots[i][j+1].y).toFixed(3))
+	
+	}
+	
+	else{
+	SVG_saw[SVG_saw.length-1]+=(" L "+(dots[i][j].x).toFixed(3)+" "+(dots[i][j].y).toFixed(3))
+	}	
+	
+	}
+
+	SVG_saw[SVG_saw.length-1]+=(" L "+(dots[i][dots[i].length-1].x).toFixed(3)+" "+(dots[i][dots[i].length-1].y).toFixed(3))
+	
+	//console.log(start + " " + index)
+	paths.push([])
+	for(start=start;start<index;start++)
+	{
+	paths[paths.length-1].push(SVG_saw[start])	
+	}
+
+}	
+
+//console.log(path_no)
+//console.log(dots)
+//console.log(SVG_saw)
+//console.log(paths)
+
+saw = []
+
+//console.log(SVG_saw)
+
+for(i=0;i<paths.length;i++){
+
+//console.log(Raphael.getTotalLength(SVG_saw[i]))
+saw.push([])
+
+
+	for(j=0;j<paths[i].length;j++){
+
+
+	//console.log( Math.round(Raphael.getTotalLength(paths[i][j])) )
+	l=parseFloat(((Raphael.getTotalLength(paths[i][j]))/(Math.ceil(Raphael.getTotalLength(paths[i][j])/5))).toFixed(3))
+
+		for(j2=0;j2<(Raphael.getTotalLength(paths[i][j])+1);j2=j2+l){
+
+			saw[i].push({x:parseFloat((Raphael.getPointAtLength(paths[i][j], j2).x).toFixed(3)),y:parseFloat((Raphael.getPointAtLength(paths[i][j], j2).y).toFixed(3))})
+
+
+		}
+
+}
+
+
+
+}
+//console.log(saw)
+///////////
+
+for(i=0;i<saw.length;i++){
+
+	a = (parseFloat((Math.atan2(saw[i][1].x-saw[i][0].x,saw[i][1].y-saw[i][0].y)*(180/Math.PI)).toFixed(2)))
+	saw[i][0].a = a
+   saw[i][0].r = true
+	saw[i][saw[i].length-1].r = true
+
+   for(j=1;j<saw[i].length-1;j++){
+			b = a
+			a = (parseFloat((Math.atan2(saw[i][j+1].x-saw[i][j].x,saw[i][j+1].y-saw[i][j].y)*(180/Math.PI)).toFixed(2)))
+			
+
+			if(a<=0){
+				ia = (a + 360)
+			}
+			else{
+				ia = (a - 360)
+			}
+			
+			if( Math.abs(ia-b)<=(Math.abs(a-b)) ){
+				//console.log(ia)
+				a = ia
+				
+			}
+			
+
+			if (Math.abs(360-b)+a<Math.abs(b-a)){
+				d = Math.abs(360-b)+a
+			}			
+			else{
+				d = Math.abs(b - a)
+			}
+			//d = Math.abs(b - a)			
+			
+
+
+			
+			if(d>(retract_angle) ){
+
+			saw[i][j].r = true				
+			
+			}
+			else{
+			saw[i][j].r = false
+			}
+
+         saw[i][j].a = a
+			
+   	}
+		saw[i][saw[i].length-1].a = a
+}
+
+
+console.log(saw)
+
+
+
+////////////
+
+var z=0  
+
+//console.log(saw)
+
+for(i=0;i<saw.length;i++){
+	
+	z=0
+
+   for(j=0;j<saw[i].length;j++){
+		if(z!=0){
+			z=0
+		}
+		else{
+			z=-0.125
+		}
+
+		saw[i][j].z = z
+
+   	}
+}
+
+////////////
+//console.log(saw)
+
+}
 
 
 function make(){
 
-//dots.reverse()
-//for(i=0;i<dots.length;i++){
-//   dots[i].reverse()
-//}
-//material = eval('({' + (document.getElementById("material").value) + '})')
+//sawtooth()
 
 if((document.getElementById("code").value)=="gcode"){
 
+	var feed = 20 //inches/min
+
    g=""
-   g+="g21\n"
-   g+="g0z5\n"
-//   g+="m4\n" //spindle on
+   g+="g20\n"
+   g+="g0z0.25\n"
    g+="g4p2\n"
-   g+="g1f500\n"
+   g+="g1f" + feed + "\n"
 
-for(i=0;i<dots.length;i++){
+for(i=0;i<saw.length;i++){
 
-   for(j=0;j<dots[i].length;j++){
-           if(j==0){
-           g+="g0x"+((dots[i][j].X-xmin)/sf2).toFixed(2)+"y"+(((ymax-ymin)/sf2)+((ymin-(dots[i][j].Y))/sf2)).toFixed(2) + "\n"
-           g+="g1z-0.5f200\n"
-           }
-           else{
-           g+="g1x"+((dots[i][j].X-xmin)/sf2).toFixed(2)+"y"+(((ymax-ymin)/sf2)+((ymin-(dots[i][j].Y))/sf2)).toFixed(2) + "f500\n"
-           }
-   }
+	g+="g0x"+(((saw[i][0].x-xmin)/sf2)/96).toFixed(3)+"y"+((((ymax-ymin)/sf2)+((ymin-(saw[i][0].y))/sf2))/96).toFixed(3) +  "a" + saw[i][0].a + "\n"
+	g+="g0z" + saw[i][0].z + "\n"
 
-g+="g0z3\n"
+   for(j=1;j<saw[i].length-1;j++){
+	
+		if(saw[i][j].r==true){
+			g+="g0z0.125\n"
+			g+="g0a" + (saw[i][j].a) + "\n"
+			g+="g0z" + saw[i][j].z + "\n"
+			g+="g1x"+(((saw[i][j].x-xmin)/sf2)/96).toFixed(3)+"y"+((((ymax-ymin)/sf2)+((ymin-(saw[i][j].y))/sf2))/96).toFixed(3) + "\n"
+			
+
+		}
+		else{
+			g+="g1x"+(((saw[i][j].x-xmin)/sf2)/96).toFixed(3)+"y"+((((ymax-ymin)/sf2)+((ymin-(saw[i][j].y))/sf2))/96).toFixed(3) + "z" + saw[i][j].z + "a" + saw[i][j].a +"\n"
+		}
+			
+
+
+   	}
+	
+	g+="g1x"+(((saw[i][j].x-xmin)/sf2)/96).toFixed(3)+"y"+((((ymax-ymin)/sf2)+((ymin-(saw[i][j].y))/sf2))/96).toFixed(3) + "z" + saw[i][j].z + "a" + saw[i][j].a +"\n"
+
+	g+="g0z-0.125\n"
+	g+="g0z0\n"
+	g+="g0z0.125\n"
 
 }
 
-//   g+="m5\n"
+
+	g+="g0z0.25\n"
+	g+="g4p0.5\n"
+	g+="g0x0y0\n"
    g+="m30\n"
-   //console.log(g);
+
+
    fabmo.submitJob({
       file : g,
       filename : image.name + '.g',
       name : image.name,
-      description : (((xmax-xmin)/sf2).toFixed(2))+" x "+(((ymax-ymin)/sf2).toFixed(2))+" mm"
+      description : ((((xmax-xmin)/sf2)/96).toFixed(2))+" x "+((((ymax-ymin)/sf2)/96).toFixed(2))+"\""
    });
+
+
+
+
+/*
+
+	var feed = 20 //inches/min
+
+   g=""
+   g+="g20\n"
+   g+="g0z0.375\n"
+	g+="g0a0\n"
+   g+="g4p2\n"
+   g+="g1" + feed + "\n"
+
+for(i=0;i<dots.length;i++){
+
+   for(j=0;j<dots[i].length;j++){
+
+           if(j==0){
+
+           		g+="g0x"+(((dots[i][j].x-xmin)/sf2)/96).toFixed(3)+"y"+((((ymax-ymin)/sf2)+((ymin-(dots[i][j].y))/sf2))/96).toFixed(3) + "\n" 
+			  		g+="g0a"+ (Math.atan2(dots[i][j+1].x-dots[i][j].x,dots[i][j+1].y-dots[i][j].y)).toFixed(3) +"\n"
+           		g+="g1z-0.125f"+ (feed/2) + "\n"
+
+           }
+           else{
+			  	if(j<dots[i].length-1){
+
+					g+="g1x"+(((dots[i][j].x-xmin)/sf2)/96).toFixed(3)+"y"+((((ymax-ymin)/sf2)+((ymin-(dots[i][j].y))/sf2))/96).toFixed(3) + "f" + feed + "\n"
+
+
+					var b = (Math.atan2(dots[i][j].x-dots[i][j-1].x,dots[i][j].y-dots[i][j-1].y)).toFixed(3)
+					var a = (Math.atan2(dots[i][j+1].x-dots[i][j].x,dots[i][j+1].y-dots[i][j].y)).toFixed(3)
+
+					if(Math.abs(a-b)>(retract_angle*(Math.PI/180))){
+						g+="g0z0.25\n"				
+						g+="g0a"+ (Math.atan2(dots[i][j+1].x-dots[i][j].x,dots[i][j+1].y-dots[i][j].y)).toFixed(3) +"\n"
+           			g+="g1z-0.125f"+(feed/2)+"\n"
+						g+="g1x"+(((dots[i][j].x-xmin)/sf2)/96).toFixed(3)+"y"+((((ymax-ymin)/sf2)+((ymin-(dots[i][j].y))/sf2))/96).toFixed(3) + "f" + feed + "\n"
+					}
+					else{
+			  			g+="g0a"+ (Math.atan2(dots[i][j+1].x-dots[i][j].x,dots[i][j+1].y-dots[i][j].y)).toFixed(3) +"\n"
+						g+="g1x"+(((dots[i][j].x-xmin)/sf2)/96).toFixed(3)+"y"+((((ymax-ymin)/sf2)+((ymin-(dots[i][j].y))/sf2))/96).toFixed(3) + "f" + feed + "\n"
+					}
+			  	}
+				
+				else{
+
+						g+="g1x"+(((dots[i][j].x-xmin)/sf2)/96).toFixed(3)+"y"+((((ymax-ymin)/sf2)+((ymin-(dots[i][j].y))/sf2))/96).toFixed(3) + "f" + feed + "\n"
+						
+				
+				}
+				
+
+			  }
+           
+   }
+
+	g+="g0z0.25\n"
+
 
 }
 
 
+
+	g+="g0z0.25\n"
+	g+="g4p0.5\n"
+	g+="g0a0\n"
+	g+="g0x0y0z0.375\n"
+   g+="m30\n"
+
+
+   fabmo.submitJob({
+      file : g,
+      filename : image.name + '.g',
+      name : image.name,
+      description : ((((xmax-xmin)/sf2)/96).toFixed(2))+" x "+((((ymax-ymin)/sf2)/96).toFixed(2))+"\""
+   });
+*/
+
+}
+
 else if((document.getElementById("code").value)=="sbp"){
 
+	var a = 0 
+	var b = 0	 
+
    g=""
-   g+="'UNITS = INCH\n"
+//   g+="'UNITS = INCH\n"
    g+="JZ,0.25\n"
 	g+="MA,0\n"
    g+="J2,0,0\n"
 
    g+="PAUSE 3\n"
-   g+="MS,20,10\n"  //set feed,plunge
-
-	//SO,1,1 //spindle on
-	//SO,1,0 //spindle off
-
+   g+="MS,1,0.5\n"  //set feed,plunge
 
 for(i=0;i<dots.length;i++){
 
    for(j=0;j<dots[i].length;j++){
            if(j==0){
 
+           g+="J2,"+(((dots[i][j].x-xmin)/sf2)/96).toFixed(3)+","+((((ymax-ymin)/sf2)+((ymin-(dots[i][j].y))/sf2))/96).toFixed(3) + "\n" 
 
-
-           g+="J2,"+(((dots[i][j].X-xmin)/sf2)/96).toFixed(3)+","+((((ymax-ymin)/sf2)+((ymin-(dots[i][j].Y))/sf2))/96).toFixed(3) + "\n" 
-
-			  g+="MA,"+ (Math.atan2(dots[i][j+1].X-dots[i][j].X,dots[i][j+1].Y-dots[i][j].Y)*(180/Math.PI)).toFixed(3) +"\n"
+			  g+="MA,"+ (Math.atan2(dots[i][j+1].x-dots[i][j].x,dots[i][j+1].y-dots[i][j].y)*(180/Math.PI)).toFixed(3) +"\n"
            g+="MZ,-0.125\n"
    		  g+="MI,Z,1,0,5,0.05\n"
+			  
+			  a = parseFloat((Math.atan2(dots[i][j+1].x-dots[i][j].x,dots[i][j+1].y-dots[i][j].y)*(180/Math.PI)).toFixed(3))
+
+			  //console.log(a + " f")
+
            }
            else{
 			  	if(j<dots[i].length-1){
 
-					g+="M2,"+(((dots[i][j].X-xmin)/sf2)/96).toFixed(3)+","+((((ymax-ymin)/sf2)+((ymin-(dots[i][j].Y))/sf2))/96).toFixed(3) + "\n"
+					b = a
 
+					a = parseFloat((Math.atan2(dots[i][j+1].x-dots[i][j].x,dots[i][j+1].y-dots[i][j].y)*(180/Math.PI)).toFixed(3))					
+					
+					//console.log(a-b)
+					//console.log(a)
 
-					var a = (Math.atan2(dots[i][j].X-dots[i][j-1].X,dots[i][j].Y-dots[i][j-1].Y)*(180/Math.PI)).toFixed(3)
-					var b = (Math.atan2(dots[i][j+1].X-dots[i][j].X,dots[i][j+1].Y-dots[i][j].Y)*(180/Math.PI)).toFixed(3)
+					if((Math.abs(a-b))>(retract_angle)){
+						
+						//console.log(Math.abs(b-a))
 
-					if(Math.abs(b-a)>=retract_angle){
 						g+="MI,0\n"
-						g+="JZ,0.125\n"				
-						g+="MA,"+ (Math.atan2(dots[i][j+1].X-dots[i][j].X,dots[i][j+1].Y-dots[i][j].Y)*(180/Math.PI)).toFixed(3) +"\n"
+						g+="JZ,0.25\n"				
+						g+="MA,"+ a +"\n"
            			g+="MZ,-0.125\n"
    		 			g+="MI,Z,1,0,5,0.05\n"
+						g+="M2,"+(((dots[i][j].x-xmin)/sf2)/96).toFixed(3)+","+((((ymax-ymin)/sf2)+((ymin-(dots[i][j].y))/sf2))/96).toFixed(3) + "\n"
 					}
+
 					else{
-			  		g+="MA,"+ (Math.atan2(dots[i][j+1].X-dots[i][j].X,dots[i][j+1].Y-dots[i][j].Y)*(180/Math.PI)).toFixed(3) +"\n"
+			  			g+="MA,"+ a +"\n"
+						g+="M2,"+(((dots[i][j].x-xmin)/sf2)/96).toFixed(3)+","+((((ymax-ymin)/sf2)+((ymin-(dots[i][j].y))/sf2))/96).toFixed(3) + "\n"
 					}
-			  	}	
-           
+					
+			  	}
+			  	else{
+					g+="M2,"+(((dots[i][j].x-xmin)/sf2)/96).toFixed(3)+","+((((ymax-ymin)/sf2)+((ymin-(dots[i][j].y))/sf2))/96).toFixed(3) + "\n"
+					           
+					}
            }
    }
 
 g+="MI,0\n"
-g+="JZ,0.125\n"
-
+g+="JZ,0.25\n"
 
 }
 
 g+="MA,0\n"
 g+="J3,0,0,0.25\n"
+
+//console.log(g)
 
 
    fabmo.submitJob({
@@ -632,9 +947,11 @@ g+="J3,0,0,0.25\n"
    });
 
 
-}
+	}
 
 }
+
+
 </script>
 
 </body>
