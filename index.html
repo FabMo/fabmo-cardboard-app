@@ -165,7 +165,7 @@ ctx.clearRect(0,0,ctx.canvas.width,ctx.canvas.height);
 ctx.fillStyle = "#E0E0F8"
 ctx.lineWidth = 1
 ctx.fillStyle = "#E0E0F8"
-ctx.strokeStyle = "#333"
+ctx.strokeStyle = "#ff0000"
 
 sf=((ctx.canvas.height-5)/(ymax-ymin))
 
@@ -180,7 +180,7 @@ ctx.fill()
 
 		
       for(j=0;j<dots[i].length;j++){
-              //ctx.lineTo(dots[i][j].x*sf,dots[i][j].y*sf)
+              ctx.lineTo(dots[i][j].x*sf,dots[i][j].y*sf)
       }
    ctx.stroke()
    }
@@ -196,6 +196,7 @@ ctx.fill()
    ctx.stroke()
    }
 
+ctx.strokeStyle = "#333"
 
    for(i=0;i<saw.length;i++){
    
@@ -205,6 +206,7 @@ ctx.fill()
 				   	//ctx.moveTo(dots[i][j].x*sf,dots[i][j].y*sf)
 		    			//ctx.arc(dots[i][j].x*sf,dots[i][j].y*sf,(1),0,2*Math.PI)
 						//console.log(i + " " + j)
+
 				   	ctx.moveTo(saw[i][j].x*sf,saw[i][j].y*sf)
 		    			ctx.arc(saw[i][j].x*sf,saw[i][j].y*sf,(1),0,2*Math.PI)
    				ctx.stroke()
@@ -222,11 +224,9 @@ ctx.fill()
 }
 
 //TODO
-//sawtooth profile
-//processing to canvas
+
 //replace alert with fabmo.notify
-//add options depth
-//remove size prompt
+//add parameters
 //
 
 var g = ""
@@ -243,6 +243,7 @@ var sf2 = 1
 var target_width = 101.6
 var tool_diameter
 var retract_angle = 20
+var message
 
 var SVG_saw = []
 var saw = []
@@ -253,10 +254,9 @@ var job_info
 
 function info(){
 
-alert(image.name + "\noriginal size = \nwidth: " + ((xmax-xmin)).toFixed(2) + " px" + "\nheight: " + ((ymax-ymin)).toFixed(2)+ " px") 
+message = (image.name + "\noriginal size = \nwidth: " + ((xmax-xmin)).toFixed(2) + " px" + "\nheight: " + ((ymax-ymin)).toFixed(2)+ " px") 
 
-//job_info = "hello world"
-//fabmo.notify('info',test)
+fabmo.notify('info',message)
 
 }
 
@@ -638,7 +638,12 @@ saw.push([])
 
 for(i=0;i<saw.length;i++){
 
+	if(saw[i][1]!=undefined){
 	a = (parseFloat((Math.atan2(saw[i][1].x-saw[i][0].x,saw[i][1].y-saw[i][0].y)*(180/Math.PI)).toFixed(2)))
+	}
+	else{
+	a = 0
+	}
 	saw[i][0].a = a
    saw[i][0].r = true
 	saw[i][saw[i].length-1].r = true
@@ -746,8 +751,8 @@ for(i=0;i<saw.length;i++){
 		if(saw[i][j].r==true){
 			g+="g0z0.125\n"
 			g+="g0a" + (saw[i][j].a) + "\n"
-			g+="g0z" + saw[i][j].z + "\n"
-			g+="g1x"+(((saw[i][j].x-xmin)/sf2)/96).toFixed(3)+"y"+((((ymax-ymin)/sf2)+((ymin-(saw[i][j].y))/sf2))/96).toFixed(3) + "\n"
+			g+="g0z" + saw[i][j-1].z + "\n"
+			g+="g1x"+(((saw[i][j].x-xmin)/sf2)/96).toFixed(3)+"y"+((((ymax-ymin)/sf2)+((ymin-(saw[i][j].y))/sf2))/96).toFixed(3) + "z" + saw[i][j].z + "\n"
 			
 
 		}
@@ -759,7 +764,7 @@ for(i=0;i<saw.length;i++){
 
    	}
 	
-	g+="g1x"+(((saw[i][j].x-xmin)/sf2)/96).toFixed(3)+"y"+((((ymax-ymin)/sf2)+((ymin-(saw[i][j].y))/sf2))/96).toFixed(3) + "z" + saw[i][j].z + "a" + saw[i][j].a +"\n"
+	g+="g1x"+(((saw[i][saw[i].length-1].x-xmin)/sf2)/96).toFixed(3)+"y"+((((ymax-ymin)/sf2)+((ymin-(saw[i][saw[i].length-1].y))/sf2))/96).toFixed(3) + "z" + saw[i][saw[i].length-1].z + "a" + saw[i][saw[i].length-1].a +"\n"
 
 	g+="g0z-0.125\n"
 	g+="g0z0\n"
