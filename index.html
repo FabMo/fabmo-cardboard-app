@@ -57,7 +57,9 @@ SVGElement.prototype.getTransformToElement = SVGElement.prototype.getTransformTo
 
 <div id="shape">
 
-<svg id="svg" version="1.1" xmlns="http://www.w3.org/2000/svg" height="628" width="726"><polygon points="723,314 543,625.769145 183,625.769145 3,314 183,2.230855 543,2.230855 723,314" fill="white" stroke="black" stroke-width="4"/></svg>
+
+
+<svg id="svg" version="1.1" xmlns="http://www.w3.org/2000/svg" height="628" width="726"><polygon points="0,150 0,50 100,0 200,50 200,150 100,200 0,150" fill="white" stroke="black" stroke-width="4"/></svg>
 
 </div>
 
@@ -66,7 +68,8 @@ SVGElement.prototype.getTransformToElement = SVGElement.prototype.getTransformTo
 <div data-role="page" id="pageone">
   <div data-role="header">
 
-<!-- 
+<!--
+ 
       <a href="#" class="ui-btn ui-corner-all ui-shadow ui-icon-eye ui-btn-icon-left" onclick="toggleFullScreen();">FULLSCREEN</a>
      <a href="#" class="ui-btn ui-corner-all ui-shadow ui-icon-info ui-btn-icon-left" onclick="info();">JOB INFO</a> 
 -->
@@ -115,7 +118,7 @@ SVGElement.prototype.getTransformToElement = SVGElement.prototype.getTransformTo
     <div data-role="navbar">
       <ul>
         <li><a href="#pagezero" class="ui-btn-active ui-state-persist">SETUP</a></li>
-        <li><a href="#pageone" onclick="">LOAD SVG</a></li>
+        <li><a href="#pageone" onclick="sawtooth(); draw();">LOAD SVG</a></li>
 
       </ul>
     </div>
@@ -133,19 +136,51 @@ SVGElement.prototype.getTransformToElement = SVGElement.prototype.getTransformTo
 
     <form method="post">
       <fieldset class="ui-field-contain">
-        <label for="material">FILE TYPE</label>
+        <label for="code">FILE TYPE</label>
         <select name="code" id="code">
-          <option value="gcode" selected>GCODE</option>
-          <option value="sbp">SBP</option>
+          <option value="gcode" selected>GCODE (saw profile)</option>
+          <option value="sbp">SBP ("MI" oscillation)</option>
 
         </select>
+      </fieldset>
+    </form>
+
+   <form method="post">
+      <fieldset class="ui-field-contain">
+        <label for="saw">SAW CUT</label>
+        <select name="saw" id="saw">
+          <option value="triangle">TRIANGLE</option>
+          <option value="sawtooth" selected>SAWTOOTH</option>
+        </select>
+      </fieldset>
+    </form>
+
+
+    <form method="post">
+      <fieldset class="ui-field-contain">
+        <label for="depth">CUT DEPTH</label>
+		  <input name="depth" id="depth" type="number" value="-0.15" step="0.05" autocomplete="off" max="0">
+      </fieldset>
+    </form>
+
+    <form method="post">
+      <fieldset class="ui-field-contain">
+        <label for="amplitutde">AMPLITUDE</label>
+		  <input name="amplitude" id="amplitude" type="number" value="0.05" step="0.05" autocomplete="off" min="0">
+      </fieldset>
+    </form>
+
+    <form method="post">
+      <fieldset class="ui-field-contain">
+        <label for="cutlength">CUT LENGTH</label>
+		  <input name="cutlength" id="cutlength" type="number" value="0.05" step="0.01" autocomplete="off" min="0.01">
       </fieldset>
     </form>
 
 </div>
   <div data-role="footer" style="text-align:center;">
 
-    <a href="#pageone" class="ui-btn ui-corner-all ui-shadow ui-icon-carat-r ui-btn-icon-right">LOAD SVG</a>
+    <a href="#pageone" class="ui-btn ui-corner-all ui-shadow ui-icon-carat-r ui-btn-icon-right" onclick="sawtooth(); draw();">LOAD SVG</a>
   </div>
 </div> 
 
@@ -201,6 +236,7 @@ ctx.strokeStyle = "#333"
    for(i=0;i<saw.length;i++){
    
       for(j=0;j<saw[i].length;j++){
+
 					//if(dots[i][j].r==true){
 					ctx.beginPath()
 				   	//ctx.moveTo(dots[i][j].x*sf,dots[i][j].y*sf)
@@ -225,8 +261,7 @@ ctx.strokeStyle = "#333"
 
 //TODO
 
-//replace alert with fabmo.notify
-//add parameters
+//angle > 360
 //
 
 var g = ""
@@ -404,7 +439,6 @@ draw()
 
 }
 
-
 function scale(){
 
 //console.log(dots)
@@ -418,7 +452,7 @@ for(i=0;i<dots.length;i++){
 	for(i=0;i<dots.length;i++){
 		for(j=0;j<dots[i].length;j++){
 
-//	console.log(dots[i][j].x*96)
+	//	console.log(dots[i][j].x*96)
 	dots[i][j] = ({x:dots[i][j].x*96,y:dots[i][j].y*96})
 	
 		}
@@ -429,9 +463,6 @@ for(i=0;i<dots.length;i++){
 	xmax *= 96
 	ymin *= 96
 	ymax *= 96
-
-
-
 
 }
 
@@ -457,8 +488,6 @@ $( "#resize" ).click(function() {
 		//sf2 = ((xmax-xmin)/96) //96dpi
    }
 	
-	
-   
 });
 
 
@@ -517,7 +546,6 @@ for(i=0;i<dots.length;i++){
 			}
 			
 			if( Math.abs(ia-b)<=(Math.abs(a-b)) ){
-				//console.log(ia)
 				a = ia
 				
 			}
@@ -529,9 +557,6 @@ for(i=0;i<dots.length;i++){
 			else{
 				d = Math.abs(b - a)
 			}
-			//d = Math.abs(b - a)			
-			
-
 
 			
 			if(d>(retract_angle) ){
@@ -555,7 +580,6 @@ SVG_saw = []
 var paths = []
 var index = 0
 var start = 0
-//console.log(dots)
 
 
 for(i=0;i<dots.length;i++){
@@ -600,14 +624,15 @@ start = index
 
 }	
 
-//console.log(path_no)
-//console.log(dots)
-//console.log(SVG_saw)
-//console.log(paths)
+
 
 saw = []
 
 //console.log(SVG_saw)
+
+var cutlength=96*document.getElementById("cutlength").value
+
+console.log(cutlength)
 
 for(i=0;i<paths.length;i++){
 
@@ -617,24 +642,19 @@ saw.push([])
 
 	for(j=0;j<paths[i].length;j++){
 
-
 	//console.log( Math.round(Raphael.getTotalLength(paths[i][j])) )
-	l=parseFloat(((Raphael.getTotalLength(paths[i][j]))/(Math.ceil(Raphael.getTotalLength(paths[i][j])/5))).toFixed(3))
+	l=parseFloat(((Raphael.getTotalLength(paths[i][j]))/(Math.ceil(Raphael.getTotalLength(paths[i][j])/cutlength))).toFixed(3))
 
 		for(j2=0;j2<(Raphael.getTotalLength(paths[i][j])+1);j2=j2+l){
 
 			saw[i].push({x:parseFloat((Raphael.getPointAtLength(paths[i][j], j2).x).toFixed(3)),y:parseFloat((Raphael.getPointAtLength(paths[i][j], j2).y).toFixed(3))})
 
-
 		}
 
 }
 
-
-
 }
-//console.log(saw)
-///////////
+
 
 for(i=0;i<saw.length;i++){
 
@@ -661,7 +681,6 @@ for(i=0;i<saw.length;i++){
 			}
 			
 			if( Math.abs(ia-b)<=(Math.abs(a-b)) ){
-				//console.log(ia)
 				a = ia
 				
 			}
@@ -673,9 +692,6 @@ for(i=0;i<saw.length;i++){
 			else{
 				d = Math.abs(b - a)
 			}
-			//d = Math.abs(b - a)			
-			
-
 
 			
 			if(d>(retract_angle) ){
@@ -694,15 +710,12 @@ for(i=0;i<saw.length;i++){
 }
 
 
-console.log(saw)
-
-
-
-////////////
+console.log(document.getElementById("saw").value)
 
 var z=0  
 
 //console.log(saw)
+
 
 for(i=0;i<saw.length;i++){
 	
@@ -713,7 +726,7 @@ for(i=0;i<saw.length;i++){
 			z=0
 		}
 		else{
-			z=-0.125
+			z=1
 		}
 
 		saw[i][j].z = z
@@ -721,15 +734,35 @@ for(i=0;i<saw.length;i++){
    	}
 }
 
-////////////
-//console.log(saw)
 
 }
 
 
 function make(){
 
+
+for(i=0;i<saw.length;i++){
+	
+	z=(parseFloat(document.getElementById("depth").value))
+
+   for(j=0;j<saw[i].length;j++){
+		if(z!=(parseFloat(document.getElementById("depth").value))){
+			z=(parseFloat(document.getElementById("depth").value))
+		}
+		else{
+			z=((parseFloat(document.getElementById("depth").value))+(parseFloat(document.getElementById("amplitude").value))).toFixed(3)
+		}
+
+		saw[i][j].z = z
+
+   	}
+}
+
+//console.log(z)
+
+
 //sawtooth()
+var cut_depth = (document.getElementById("depth").value)
 
 if((document.getElementById("code").value)=="gcode"){
 
@@ -747,24 +780,77 @@ for(i=0;i<saw.length;i++){
 	g+="g0z" + saw[i][0].z + "\n"
 
    for(j=1;j<saw[i].length-1;j++){
+
+
 	
 		if(saw[i][j].r==true){
+
+			if((document.getElementById("saw").value=="sawtooth") && (saw[i][j].z==(parseFloat(document.getElementById("depth").value)))){
+				g+="g0z" + ((parseFloat(document.getElementById("depth").value))+(parseFloat(document.getElementById("amplitude").value))).toFixed(3) + "\n"
+				g+="g1x"+(((saw[i][j].x-xmin)/sf2)/96).toFixed(3)+"y"+((((ymax-ymin)/sf2)+((ymin-(saw[i][j].y))/sf2))/96).toFixed(3) + "z" + saw[i][j].z + "\n"
+			}
+		
+
+			else if((document.getElementById("saw").value=="sawtooth") && (saw[i][j].z!=(parseFloat(document.getElementById("depth").value)))){
+				g+="g0z" + (parseFloat(document.getElementById("depth").value)) + "\n"
+				g+="g1x"+(((saw[i][j].x-xmin)/sf2)/96).toFixed(3)+"y"+((((ymax-ymin)/sf2)+((ymin-(saw[i][j].y))/sf2))/96).toFixed(3) + "z" + saw[i][j].z + "\n"
+			}
+
+			else{
+			g+="g1x"+(((saw[i][j].x-xmin)/sf2)/96).toFixed(3)+"y"+((((ymax-ymin)/sf2)+((ymin-(saw[i][j].y))/sf2))/96).toFixed(3) + "z" + saw[i][j].z + "\n"
+			}
+
 			g+="g0z0.125\n"
 			g+="g0a" + (saw[i][j].a) + "\n"
-			g+="g0z" + saw[i][j-1].z + "\n"
-			g+="g1x"+(((saw[i][j].x-xmin)/sf2)/96).toFixed(3)+"y"+((((ymax-ymin)/sf2)+((ymin-(saw[i][j].y))/sf2))/96).toFixed(3) + "z" + saw[i][j].z + "\n"
-			
 
+			//g+="g0z" + saw[i][j].z + "\n"
+			if((document.getElementById("saw").value=="sawtooth") && (saw[i][j].z==(parseFloat(document.getElementById("depth").value)))){
+				g+="g0z" + ((parseFloat(document.getElementById("depth").value))+(parseFloat(document.getElementById("amplitude").value))).toFixed(3) + "\n"
+				//g+="g0z" + (parseFloat(document.getElementById("depth").value)) + "\n"
+			}
+			else if((document.getElementById("saw").value=="sawtooth") && (saw[i][j].z!=(parseFloat(document.getElementById("depth").value)))){
+				g+="g0z" + ((parseFloat(document.getElementById("depth").value))+(parseFloat(document.getElementById("amplitude").value))).toFixed(3) + "\n"
+				//g+="g0z" + (parseFloat(document.getElementById("depth").value)) + "\n"
+			}
+			else{
+				g+="g0z" + saw[i][j].z + "\n"
+
+			}			
+	
 		}
 		else{
-			g+="g1x"+(((saw[i][j].x-xmin)/sf2)/96).toFixed(3)+"y"+((((ymax-ymin)/sf2)+((ymin-(saw[i][j].y))/sf2))/96).toFixed(3) + "z" + saw[i][j].z + "a" + saw[i][j].a +"\n"
+
+			
+
+			if((document.getElementById("saw").value=="sawtooth") && (saw[i][j].z==(parseFloat(document.getElementById("depth").value)))){
+
+				g+="g1x"+(((saw[i][j].x-xmin)/sf2)/96).toFixed(3)+"y"+((((ymax-ymin)/sf2)+((ymin-(saw[i][j].y))/sf2))/96).toFixed(3) + "z" + saw[i][j].z + "a" + saw[i][j-1].a +"\n"
+
+				g+="g0z" + ((parseFloat(document.getElementById("depth").value))+(parseFloat(document.getElementById("amplitude").value))).toFixed(3) + "\n"
+			}
+			else if((document.getElementById("saw").value=="sawtooth") && (saw[i][j].z!=(parseFloat(document.getElementById("depth").value)))){
+				g+="g1x"+(((saw[i][j].x-xmin)/sf2)/96).toFixed(3)+"y"+((((ymax-ymin)/sf2)+((ymin-(saw[i][j].y))/sf2))/96).toFixed(3) + "z" + (document.getElementById("depth").value) + "a" + saw[i][j-1].a +"\n"
+				g+="g0z" + ((parseFloat(document.getElementById("depth").value))+(parseFloat(document.getElementById("amplitude").value))).toFixed(3) + "\n"
+			}
+
+			else if(document.getElementById("saw").value!="sawtooth"){
+
+			g+="g1x"+(((saw[i][j].x-xmin)/sf2)/96).toFixed(3)+"y"+((((ymax-ymin)/sf2)+((ymin-(saw[i][j].y))/sf2))/96).toFixed(3) + "z" + saw[i][j].z + "a" + saw[i][j-1].a +"\n"
+			}
+
+			
+
+
 		}
 			
 
 
    	}
+
+
 	
 	g+="g1x"+(((saw[i][saw[i].length-1].x-xmin)/sf2)/96).toFixed(3)+"y"+((((ymax-ymin)/sf2)+((ymin-(saw[i][saw[i].length-1].y))/sf2))/96).toFixed(3) + "z" + saw[i][saw[i].length-1].z + "a" + saw[i][saw[i].length-1].a +"\n"
+
 
 	g+="g0z-0.125\n"
 	g+="g0z0\n"
@@ -785,8 +871,6 @@ for(i=0;i<saw.length;i++){
       name : image.name,
       description : ((((xmax-xmin)/sf2)/96).toFixed(2))+" x "+((((ymax-ymin)/sf2)/96).toFixed(2))+"\""
    });
-
-
 
 
 /*
