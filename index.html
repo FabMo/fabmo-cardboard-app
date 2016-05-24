@@ -134,6 +134,9 @@ SVGElement.prototype.getTransformToElement = SVGElement.prototype.getTransformTo
       </fieldset>
     </form>
 
+
+
+
     <form method="post">
       <fieldset class="ui-field-contain">
         <label for="code">FILE TYPE</label>
@@ -155,24 +158,33 @@ SVGElement.prototype.getTransformToElement = SVGElement.prototype.getTransformTo
       </fieldset>
     </form>
 
+    <form method="post">
+      <fieldset class="ui-field-contain">
+        <label for="units">UNITS</label>
+        <select name="units" id="units">
+          <option value="inch">INCH</option>
+          <option value="mm" selected>MM</option>
+        </select>
+      </fieldset>
+    </form>
 
     <form method="post">
       <fieldset class="ui-field-contain">
-        <label for="depth">CUT DEPTH</label>
+        <label for="depth">CUT DEPTH (inch)</label>
 		  <input name="depth" id="depth" type="number" value="-0.15" step="0.05" autocomplete="off" max="0">
       </fieldset>
     </form>
 
     <form method="post">
       <fieldset class="ui-field-contain">
-        <label for="amplitutde">AMPLITUDE</label>
+        <label for="amplitutde">AMPLITUDE (inch)</label>
 		  <input name="amplitude" id="amplitude" type="number" value="0.05" step="0.05" autocomplete="off" min="0">
       </fieldset>
     </form>
 
     <form method="post">
       <fieldset class="ui-field-contain">
-        <label for="cutlength">CUT LENGTH</label>
+        <label for="cutlength">CUT LENGTH (inch)</label>
 		  <input name="cutlength" id="cutlength" type="number" value="0.05" step="0.01" autocomplete="off" min="0.01">
       </fieldset>
     </form>
@@ -632,7 +644,7 @@ saw = []
 
 var cutlength=96*document.getElementById("cutlength").value
 
-console.log(cutlength)
+//console.log(cutlength)
 
 for(i=0;i<paths.length;i++){
 
@@ -645,76 +657,51 @@ saw.push([])
 	//console.log( Math.round(Raphael.getTotalLength(paths[i][j])) )
 	l=parseFloat(((Raphael.getTotalLength(paths[i][j]))/(Math.ceil(Raphael.getTotalLength(paths[i][j])/cutlength))).toFixed(3))
 
-		for(j2=0;j2<(Raphael.getTotalLength(paths[i][j])+1);j2=j2+l){
+//saw[i].push({x:paths[i][j],y:paths[i][j]})
 
-			saw[i].push({x:parseFloat((Raphael.getPointAtLength(paths[i][j], j2).x).toFixed(3)),y:parseFloat((Raphael.getPointAtLength(paths[i][j], j2).y).toFixed(3))})
+//(Raphael.getTotalLength(paths[i][j]))
+		for(j2=l;j2<(Raphael.getTotalLength(paths[i][j])-1);j2=j2+l){
+
+			saw[i].push({x:parseFloat((Raphael.getPointAtLength(paths[i][j], j2).x).toFixed(6)),y:parseFloat((Raphael.getPointAtLength(paths[i][j], j2).y).toFixed(6))})
 
 		}
 
-}
+saw[i].push({x:parseFloat((Raphael.getPointAtLength(paths[i][j], (Raphael.getTotalLength(paths[i][j]))).x).toFixed(6)),y:parseFloat((Raphael.getPointAtLength(paths[i][j], (Raphael.getTotalLength(paths[i][j]))).y).toFixed(6))})
+		
 
 }
 
+}
+
+//console.log(saw)
 
 for(i=0;i<saw.length;i++){
 
-	if(saw[i][1]!=undefined){
-	a = (parseFloat((Math.atan2(saw[i][1].x-saw[i][0].x,saw[i][1].y-saw[i][0].y)*(180/Math.PI)).toFixed(2)))
+	a = (parseFloat((Math.atan2((saw[i][1].x-saw[i][0].x),(saw[i][1].y-saw[i][0].y))*(180/Math.PI)).toFixed(2)))
+
+   for(j=0;j<saw[i].length-1;j++){
+	b = a
+	a = (parseFloat((Math.atan2((saw[i][j+1].x-saw[i][j].x),(saw[i][j+1].y-saw[i][j].y))*(180/Math.PI)).toFixed(2)))
+
+
+	saw[i][j].a=a
+	if(Math.abs(b-a)>retract_angle){
+	saw[i][j].r=true
+	//console.log(b-a)
 	}
 	else{
-	a = 0
+	saw[i][j].r=false
 	}
-	saw[i][0].a = a
-   saw[i][0].r = true
-	saw[i][saw[i].length-1].r = true
+	
 
-   for(j=1;j<saw[i].length-1;j++){
-			b = a
-			a = (parseFloat((Math.atan2(saw[i][j+1].x-saw[i][j].x,saw[i][j+1].y-saw[i][j].y)*(180/Math.PI)).toFixed(2)))
-			
+	}
 
-			if(a<=0){
-				ia = (a + 360)
-			}
-			else{
-				ia = (a - 360)
-			}
-			
-			if( Math.abs(ia-b)<=(Math.abs(a-b)) ){
-				a = ia
-				
-			}
-			
-
-			if (Math.abs(360-b)+a<Math.abs(b-a)){
-				d = Math.abs(360-b)+a
-			}			
-			else{
-				d = Math.abs(b - a)
-			}
-
-			
-			if(d>(retract_angle) ){
-
-			saw[i][j].r = true				
-			
-			}
-			else{
-			saw[i][j].r = false
-			}
-
-         saw[i][j].a = a
-			
-   	}
-		saw[i][saw[i].length-1].a = a
 }
 
+console.log(saw)
 
-console.log(document.getElementById("saw").value)
 
 var z=0  
-
-//console.log(saw)
 
 
 for(i=0;i<saw.length;i++){
@@ -732,7 +719,7 @@ for(i=0;i<saw.length;i++){
 		saw[i][j].z = z
 
    	}
-}
+	}
 
 
 }
@@ -768,16 +755,29 @@ if((document.getElementById("code").value)=="gcode"){
 
 	var feed = 20 //inches/min
 
+	var scale = 1
+
    g=""
+
+	if(document.getElementById("units").value=="mm"){
+   g+="g21\n"
+	scale = 25.4
+   g+="g0z5\n"
+   g+="g4p2\n"
+   g+="g1f" + (feed*scale) + "\n"
+	}
+	else{
    g+="g20\n"
    g+="g0z0.25\n"
    g+="g4p2\n"
    g+="g1f" + feed + "\n"
+	}
+
 
 for(i=0;i<saw.length;i++){
 
-	g+="g0x"+(((saw[i][0].x-xmin)/sf2)/96).toFixed(3)+"y"+((((ymax-ymin)/sf2)+((ymin-(saw[i][0].y))/sf2))/96).toFixed(3) +  "a" + saw[i][0].a + "\n"
-	g+="g0z" + saw[i][0].z + "\n"
+	g+="g0x"+((((saw[i][0].x-xmin)/sf2)/96)*scale).toFixed(3)+"y"+(((((ymax-ymin)/sf2)+((ymin-(saw[i][0].y))/sf2))/96)*scale).toFixed(3) +  "a" + saw[i][0].a + "\n"
+	g+="g0z" + (saw[i][0].z*scale).toFixed(3) + "\n"
 
    for(j=1;j<saw[i].length-1;j++){
 
@@ -786,34 +786,34 @@ for(i=0;i<saw.length;i++){
 		if(saw[i][j].r==true){
 
 			if((document.getElementById("saw").value=="sawtooth") && (saw[i][j].z==(parseFloat(document.getElementById("depth").value)))){
-				g+="g0z" + ((parseFloat(document.getElementById("depth").value))+(parseFloat(document.getElementById("amplitude").value))).toFixed(3) + "\n"
-				g+="g1x"+(((saw[i][j].x-xmin)/sf2)/96).toFixed(3)+"y"+((((ymax-ymin)/sf2)+((ymin-(saw[i][j].y))/sf2))/96).toFixed(3) + "z" + saw[i][j].z + "\n"
+				g+="g0z" + ((parseFloat(document.getElementById("depth").value)*scale)+(parseFloat(document.getElementById("amplitude").value))*scale).toFixed(3) + "\n"
+				g+="g1x"+((((saw[i][j].x-xmin)/sf2)/96)*scale).toFixed(3)+"y"+(((((ymax-ymin)/sf2)+((ymin-(saw[i][j].y))/sf2))/96)*scale).toFixed(3) + "z" + (saw[i][j].z*scale).toFixed(3) + "\n"
 			}
 		
 
 			else if((document.getElementById("saw").value=="sawtooth") && (saw[i][j].z!=(parseFloat(document.getElementById("depth").value)))){
-				g+="g0z" + (parseFloat(document.getElementById("depth").value)) + "\n"
-				g+="g1x"+(((saw[i][j].x-xmin)/sf2)/96).toFixed(3)+"y"+((((ymax-ymin)/sf2)+((ymin-(saw[i][j].y))/sf2))/96).toFixed(3) + "z" + saw[i][j].z + "\n"
+				g+="g0z" + (parseFloat(document.getElementById("depth").value)*scale).toFixed(3) + "\n"
+				g+="g1x"+((((saw[i][j].x-xmin)/sf2)/96)*scale).toFixed(3)+"y"+(((((ymax-ymin)/sf2)+((ymin-(saw[i][j].y))/sf2))/96)*scale).toFixed(3) + "z" + (saw[i][j].z*scale).toFixed(3) + "\n"
 			}
 
 			else{
-			g+="g1x"+(((saw[i][j].x-xmin)/sf2)/96).toFixed(3)+"y"+((((ymax-ymin)/sf2)+((ymin-(saw[i][j].y))/sf2))/96).toFixed(3) + "z" + saw[i][j].z + "\n"
+			g+="g1x"+((((saw[i][j].x-xmin)/sf2)/96)*scale).toFixed(3)+"y"+(((((ymax-ymin)/sf2)+((ymin-(saw[i][j].y))/sf2))/96)*scale).toFixed(3) + "z" + (saw[i][j].z*scale).toFixed(3) + "\n"
 			}
 
-			g+="g0z0.125\n"
+			g+="g0z" + (0.125*scale).toFixed(3) + "\n"
 			g+="g0a" + (saw[i][j].a) + "\n"
 
 			//g+="g0z" + saw[i][j].z + "\n"
 			if((document.getElementById("saw").value=="sawtooth") && (saw[i][j].z==(parseFloat(document.getElementById("depth").value)))){
-				g+="g0z" + ((parseFloat(document.getElementById("depth").value))+(parseFloat(document.getElementById("amplitude").value))).toFixed(3) + "\n"
+				g+="g0z" + ((parseFloat(document.getElementById("depth").value)*scale)+(parseFloat(document.getElementById("amplitude").value))*scale).toFixed(3) + "\n"
 				//g+="g0z" + (parseFloat(document.getElementById("depth").value)) + "\n"
 			}
 			else if((document.getElementById("saw").value=="sawtooth") && (saw[i][j].z!=(parseFloat(document.getElementById("depth").value)))){
-				g+="g0z" + ((parseFloat(document.getElementById("depth").value))+(parseFloat(document.getElementById("amplitude").value))).toFixed(3) + "\n"
+				g+="g0z" + ((parseFloat(document.getElementById("depth").value)*scale)+(parseFloat(document.getElementById("amplitude").value))*scale).toFixed(3) + "\n"
 				//g+="g0z" + (parseFloat(document.getElementById("depth").value)) + "\n"
 			}
 			else{
-				g+="g0z" + saw[i][j].z + "\n"
+				g+="g0z" + (saw[i][j].z*scale).toFixed(3) + "\n"
 
 			}			
 	
@@ -824,18 +824,19 @@ for(i=0;i<saw.length;i++){
 
 			if((document.getElementById("saw").value=="sawtooth") && (saw[i][j].z==(parseFloat(document.getElementById("depth").value)))){
 
-				g+="g1x"+(((saw[i][j].x-xmin)/sf2)/96).toFixed(3)+"y"+((((ymax-ymin)/sf2)+((ymin-(saw[i][j].y))/sf2))/96).toFixed(3) + "z" + saw[i][j].z + "a" + saw[i][j-1].a +"\n"
+				g+="g1x"+((((saw[i][j].x-xmin)/sf2)/96)*scale).toFixed(3)+"y"+(((((ymax-ymin)/sf2)+((ymin-(saw[i][j].y))/sf2))/96)*scale).toFixed(3) + "z" + (saw[i][j].z*scale).toFixed(3) + "\n"
 
-				g+="g0z" + ((parseFloat(document.getElementById("depth").value))+(parseFloat(document.getElementById("amplitude").value))).toFixed(3) + "\n"
+				g+="g0z" + ((parseFloat(document.getElementById("depth").value)*scale)+(parseFloat(document.getElementById("amplitude").value))*scale).toFixed(3) + "\n"
 			}
 			else if((document.getElementById("saw").value=="sawtooth") && (saw[i][j].z!=(parseFloat(document.getElementById("depth").value)))){
-				g+="g1x"+(((saw[i][j].x-xmin)/sf2)/96).toFixed(3)+"y"+((((ymax-ymin)/sf2)+((ymin-(saw[i][j].y))/sf2))/96).toFixed(3) + "z" + (document.getElementById("depth").value) + "a" + saw[i][j-1].a +"\n"
-				g+="g0z" + ((parseFloat(document.getElementById("depth").value))+(parseFloat(document.getElementById("amplitude").value))).toFixed(3) + "\n"
+				g+="g1x"+((((saw[i][j].x-xmin)/sf2)/96)*scale).toFixed(3)+"y"+(((((ymax-ymin)/sf2)+((ymin-(saw[i][j].y))/sf2))/96)*scale).toFixed(3) + "z" + ((document.getElementById("depth").value)*scale).toFixed(3) + "a" + saw[i][j-1].a +"\n"
+
+				g+="g0z" + ((parseFloat(document.getElementById("depth").value)*scale)+(parseFloat(document.getElementById("amplitude").value))*scale).toFixed(3) + "\n"
 			}
 
 			else if(document.getElementById("saw").value!="sawtooth"){
 
-			g+="g1x"+(((saw[i][j].x-xmin)/sf2)/96).toFixed(3)+"y"+((((ymax-ymin)/sf2)+((ymin-(saw[i][j].y))/sf2))/96).toFixed(3) + "z" + saw[i][j].z + "a" + saw[i][j-1].a +"\n"
+			g+="g1x"+((((saw[i][j].x-xmin)/sf2)/96)*scale).toFixed(3)+"y"+(((((ymax-ymin)/sf2)+((ymin-(saw[i][j].y))/sf2))/96)*scale).toFixed(3) + "z" + (saw[i][j].z*scale) + "a" + saw[i][j-1].a +"\n"
 			}
 
 			
@@ -849,18 +850,19 @@ for(i=0;i<saw.length;i++){
 
 
 	
-	g+="g1x"+(((saw[i][saw[i].length-1].x-xmin)/sf2)/96).toFixed(3)+"y"+((((ymax-ymin)/sf2)+((ymin-(saw[i][saw[i].length-1].y))/sf2))/96).toFixed(3) + "z" + saw[i][saw[i].length-1].z + "a" + saw[i][saw[i].length-1].a +"\n"
+	g+="g1x"+((((saw[i][saw[i].length-1].x-xmin)/sf2)/96)*scale).toFixed(3)+"y"+(((((ymax-ymin)/sf2)+((ymin-(saw[i][saw[i].length-1].y))/sf2))/96)*scale).toFixed(3) + "z" + (saw[i][saw[i].length-1].z*scale).toFixed(3) + "a" + saw[i][saw[i].length-1].a +"\n"
 
 
-	g+="g0z-0.125\n"
-	g+="g0z0\n"
-	g+="g0z0.125\n"
+//	g+="g0z-0.125\n"
+//	g+="g0z0\n"
+//	g+="g0z0.125\n"
 
 }
 
 
-	g+="g0z0.25\n"
-	g+="g4p0.5\n"
+//	g+="g0z0.25\n"
+//	g+="g4p0.5\n"
+	g+="g0z3.175\n"
 	g+="g0x0y0\n"
    g+="m30\n"
 
