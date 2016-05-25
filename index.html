@@ -160,11 +160,18 @@ SVGElement.prototype.getTransformToElement = SVGElement.prototype.getTransformTo
 
     <form method="post">
       <fieldset class="ui-field-contain">
-        <label for="units">UNITS</label>
+        <label for="units">CUT FILE UNITS</label>
         <select name="units" id="units">
           <option value="inch">INCH</option>
           <option value="mm" selected>MM</option>
         </select>
+      </fieldset>
+    </form>
+
+    <form method="post">
+      <fieldset class="ui-field-contain">
+        <label for="retract">RETRACT ANGLE (deg)</label>
+		  <input name="retract" id="retract" type="number" value="20" step="1" autocomplete="off" min="5">
       </fieldset>
     </form>
 
@@ -644,22 +651,16 @@ saw = []
 
 var cutlength=96*document.getElementById("cutlength").value
 
-//console.log(cutlength)
-
 for(i=0;i<paths.length;i++){
 
-//console.log(Raphael.getTotalLength(SVG_saw[i]))
 saw.push([])
 
+saw[i].push(dots[i][0])	
 
 	for(j=0;j<paths[i].length;j++){
 
-	//console.log( Math.round(Raphael.getTotalLength(paths[i][j])) )
 	l=parseFloat(((Raphael.getTotalLength(paths[i][j]))/(Math.ceil(Raphael.getTotalLength(paths[i][j])/cutlength))).toFixed(3))
 
-//saw[i].push({x:paths[i][j],y:paths[i][j]})
-
-//(Raphael.getTotalLength(paths[i][j]))
 		for(j2=l;j2<(Raphael.getTotalLength(paths[i][j])-1);j2=j2+l){
 
 			saw[i].push({x:parseFloat((Raphael.getPointAtLength(paths[i][j], j2).x).toFixed(6)),y:parseFloat((Raphael.getPointAtLength(paths[i][j], j2).y).toFixed(6))})
@@ -671,30 +672,39 @@ saw[i].push({x:parseFloat((Raphael.getPointAtLength(paths[i][j], (Raphael.getTot
 
 }
 
+
 }
 
 //console.log(saw)
 
 for(i=0;i<saw.length;i++){
 
-	a = (parseFloat((Math.atan2((saw[i][1].x-saw[i][0].x),(saw[i][1].y-saw[i][0].y))*(180/Math.PI)).toFixed(2)))
-
+	a = 0-(parseFloat((Math.atan2((saw[i][0].x-saw[i][1].x),(saw[i][0].y-saw[i][1].y))*(180/Math.PI)).toFixed(2)))
+   //console.log(a)
    for(j=0;j<saw[i].length-1;j++){
 	b = a
-	a = (parseFloat((Math.atan2((saw[i][j+1].x-saw[i][j].x),(saw[i][j+1].y-saw[i][j].y))*(180/Math.PI)).toFixed(2)))
+	//console.log(a)
 
+	console.log(a)
 
+	a = 0-(parseFloat((Math.atan2((saw[i][j].x-saw[i][j+1].x),(saw[i][j].y-saw[i][j+1].y))*(180/Math.PI)).toFixed(2)))
+	
 	saw[i][j].a=a
+
 	if(Math.abs(b-a)>retract_angle){
-	saw[i][j].r=true
-	//console.log(b-a)
+		saw[i][j].r=true
 	}
+
 	else{
-	saw[i][j].r=false
+		saw[i][j].r=false
 	}
 	
 
 	}
+
+	console.log(a)	
+	saw[i][saw[i].length-1].a=a
+	saw[i][saw[i].length-1].r=false
 
 }
 
@@ -745,32 +755,28 @@ for(i=0;i<saw.length;i++){
    	}
 }
 
-//console.log(z)
 
-
-//sawtooth()
 var cut_depth = (document.getElementById("depth").value)
 
 if((document.getElementById("code").value)=="gcode"){
 
 	var feed = 20 //inches/min
-
 	var scale = 1
 
    g=""
 
 	if(document.getElementById("units").value=="mm"){
-   g+="g21\n"
-	scale = 25.4
-   g+="g0z5\n"
-   g+="g4p2\n"
-   g+="g1f" + (feed*scale) + "\n"
+   	g+="g21\n"
+		scale = 25.4
+   	g+="g0z5\n"
+   	g+="g4p2\n"
+   	g+="g1f" + (feed*scale) + "\n"
 	}
 	else{
-   g+="g20\n"
-   g+="g0z0.25\n"
-   g+="g4p2\n"
-   g+="g1f" + feed + "\n"
+   	g+="g20\n"
+   	g+="g0z0.25\n"
+   	g+="g4p2\n"
+   	g+="g1f" + feed + "\n"
 	}
 
 
@@ -781,41 +787,27 @@ for(i=0;i<saw.length;i++){
 
    for(j=1;j<saw[i].length-1;j++){
 
-
-	
 		if(saw[i][j].r==true){
-
+//
 			if((document.getElementById("saw").value=="sawtooth") && (saw[i][j].z==(parseFloat(document.getElementById("depth").value)))){
-				g+="g0z" + ((parseFloat(document.getElementById("depth").value)*scale)+(parseFloat(document.getElementById("amplitude").value))*scale).toFixed(3) + "\n"
+
 				g+="g1x"+((((saw[i][j].x-xmin)/sf2)/96)*scale).toFixed(3)+"y"+(((((ymax-ymin)/sf2)+((ymin-(saw[i][j].y))/sf2))/96)*scale).toFixed(3) + "z" + (saw[i][j].z*scale).toFixed(3) + "\n"
+
+				g+="g0z" + ((parseFloat(document.getElementById("depth").value)*scale)+(parseFloat(document.getElementById("amplitude").value))*scale).toFixed(3) + "\n"
 			}
-		
 
 			else if((document.getElementById("saw").value=="sawtooth") && (saw[i][j].z!=(parseFloat(document.getElementById("depth").value)))){
-				g+="g0z" + (parseFloat(document.getElementById("depth").value)*scale).toFixed(3) + "\n"
-				g+="g1x"+((((saw[i][j].x-xmin)/sf2)/96)*scale).toFixed(3)+"y"+(((((ymax-ymin)/sf2)+((ymin-(saw[i][j].y))/sf2))/96)*scale).toFixed(3) + "z" + (saw[i][j].z*scale).toFixed(3) + "\n"
+
+				g+="g1x"+((((saw[i][j].x-xmin)/sf2)/96)*scale).toFixed(3)+"y"+(((((ymax-ymin)/sf2)+((ymin-(saw[i][j].y))/sf2))/96)*scale).toFixed(3) + "z" + ((document.getElementById("depth").value)*scale).toFixed(3) + "\n"
+
+				g+="g0z" + ((parseFloat(document.getElementById("depth").value)*scale)+(parseFloat(document.getElementById("amplitude").value))*scale).toFixed(3) + "\n"
 			}
 
-			else{
-			g+="g1x"+((((saw[i][j].x-xmin)/sf2)/96)*scale).toFixed(3)+"y"+(((((ymax-ymin)/sf2)+((ymin-(saw[i][j].y))/sf2))/96)*scale).toFixed(3) + "z" + (saw[i][j].z*scale).toFixed(3) + "\n"
-			}
-
+//			
 			g+="g0z" + (0.125*scale).toFixed(3) + "\n"
 			g+="g0a" + (saw[i][j].a) + "\n"
 
-			//g+="g0z" + saw[i][j].z + "\n"
-			if((document.getElementById("saw").value=="sawtooth") && (saw[i][j].z==(parseFloat(document.getElementById("depth").value)))){
-				g+="g0z" + ((parseFloat(document.getElementById("depth").value)*scale)+(parseFloat(document.getElementById("amplitude").value))*scale).toFixed(3) + "\n"
-				//g+="g0z" + (parseFloat(document.getElementById("depth").value)) + "\n"
-			}
-			else if((document.getElementById("saw").value=="sawtooth") && (saw[i][j].z!=(parseFloat(document.getElementById("depth").value)))){
-				g+="g0z" + ((parseFloat(document.getElementById("depth").value)*scale)+(parseFloat(document.getElementById("amplitude").value))*scale).toFixed(3) + "\n"
-				//g+="g0z" + (parseFloat(document.getElementById("depth").value)) + "\n"
-			}
-			else{
-				g+="g0z" + (saw[i][j].z*scale).toFixed(3) + "\n"
-
-			}			
+			g+="g0z" + ((parseFloat(document.getElementById("depth").value)*scale)+(parseFloat(document.getElementById("amplitude").value))*scale).toFixed(3) + "\n"
 	
 		}
 		else{
@@ -824,12 +816,12 @@ for(i=0;i<saw.length;i++){
 
 			if((document.getElementById("saw").value=="sawtooth") && (saw[i][j].z==(parseFloat(document.getElementById("depth").value)))){
 
-				g+="g1x"+((((saw[i][j].x-xmin)/sf2)/96)*scale).toFixed(3)+"y"+(((((ymax-ymin)/sf2)+((ymin-(saw[i][j].y))/sf2))/96)*scale).toFixed(3) + "z" + (saw[i][j].z*scale).toFixed(3) + "\n"
+				g+="g1x"+((((saw[i][j].x-xmin)/sf2)/96)*scale).toFixed(3)+"y"+(((((ymax-ymin)/sf2)+((ymin-(saw[i][j].y))/sf2))/96)*scale).toFixed(3) + "z" + (saw[i][j].z*scale).toFixed(3) + "a" + saw[i][j].a +"\n"
 
 				g+="g0z" + ((parseFloat(document.getElementById("depth").value)*scale)+(parseFloat(document.getElementById("amplitude").value))*scale).toFixed(3) + "\n"
 			}
 			else if((document.getElementById("saw").value=="sawtooth") && (saw[i][j].z!=(parseFloat(document.getElementById("depth").value)))){
-				g+="g1x"+((((saw[i][j].x-xmin)/sf2)/96)*scale).toFixed(3)+"y"+(((((ymax-ymin)/sf2)+((ymin-(saw[i][j].y))/sf2))/96)*scale).toFixed(3) + "z" + ((document.getElementById("depth").value)*scale).toFixed(3) + "a" + saw[i][j-1].a +"\n"
+				g+="g1x"+((((saw[i][j].x-xmin)/sf2)/96)*scale).toFixed(3)+"y"+(((((ymax-ymin)/sf2)+((ymin-(saw[i][j].y))/sf2))/96)*scale).toFixed(3) + "z" + ((document.getElementById("depth").value)*scale).toFixed(3) + "a" + saw[i][j].a +"\n"
 
 				g+="g0z" + ((parseFloat(document.getElementById("depth").value)*scale)+(parseFloat(document.getElementById("amplitude").value))*scale).toFixed(3) + "\n"
 			}
@@ -839,31 +831,33 @@ for(i=0;i<saw.length;i++){
 			g+="g1x"+((((saw[i][j].x-xmin)/sf2)/96)*scale).toFixed(3)+"y"+(((((ymax-ymin)/sf2)+((ymin-(saw[i][j].y))/sf2))/96)*scale).toFixed(3) + "z" + (saw[i][j].z*scale) + "a" + saw[i][j-1].a +"\n"
 			}
 
-			
-
-
 		}
-			
-
 
    	}
 
+			if((document.getElementById("saw").value=="sawtooth") && (saw[i][saw[i].length-1].z==(parseFloat(document.getElementById("depth").value)))){
 
-	
-	g+="g1x"+((((saw[i][saw[i].length-1].x-xmin)/sf2)/96)*scale).toFixed(3)+"y"+(((((ymax-ymin)/sf2)+((ymin-(saw[i][saw[i].length-1].y))/sf2))/96)*scale).toFixed(3) + "z" + (saw[i][saw[i].length-1].z*scale).toFixed(3) + "a" + saw[i][saw[i].length-1].a +"\n"
+				g+="g1x"+((((saw[i][saw[i].length-1].x-xmin)/sf2)/96)*scale).toFixed(3)+"y"+(((((ymax-ymin)/sf2)+((ymin-(saw[i][saw[i].length-1].y))/sf2))/96)*scale).toFixed(3) + "z" + (saw[i][saw[i].length-1].z*scale).toFixed(3) + "a" + saw[i][saw[i].length-1].a +"\n"
 
+				g+="g0z" + ((parseFloat(document.getElementById("depth").value)*scale)+(parseFloat(document.getElementById("amplitude").value))*scale).toFixed(3) + "\n"
+			}
 
-//	g+="g0z-0.125\n"
-//	g+="g0z0\n"
-//	g+="g0z0.125\n"
+			else if((document.getElementById("saw").value=="sawtooth") && (saw[i][saw[i].length-1].z!=(parseFloat(document.getElementById("depth").value)))){
+				g+="g1x"+((((saw[i][j].x-xmin)/sf2)/96)*scale).toFixed(3)+"y"+(((((ymax-ymin)/sf2)+((ymin-(saw[i][saw[i].length-1].y))/sf2))/96)*scale).toFixed(3) + "z" + ((document.getElementById("depth").value)*scale).toFixed(3) + "a" + saw[i][saw[i].length-1].a +"\n"
+
+				g+="g0z" + ((parseFloat(document.getElementById("depth").value)*scale)+(parseFloat(document.getElementById("amplitude").value))*scale).toFixed(3) + "\n"
+			}
+			else{
+				g+="g1x"+((((saw[i][saw[i].length-1].x-xmin)/sf2)/96)*scale).toFixed(3)+"y"+(((((ymax-ymin)/sf2)+((ymin-(saw[i][saw[i].length-1].y))/sf2))/96)*scale).toFixed(3) + "z" + (saw[i][saw[i].length-2].z*scale).toFixed(3) + "a" + saw[i][saw[i].length-1].a +"\n"
+			}
 
 }
 
 
 //	g+="g0z0.25\n"
 //	g+="g4p0.5\n"
-	g+="g0z3.175\n"
-	g+="g0x0y0\n"
+	g+="g0z" + (0.125*scale).toFixed(3) + "\n"
+	g+="g0x0y0a0\n"
    g+="m30\n"
 
 
@@ -962,7 +956,7 @@ else if((document.getElementById("code").value)=="sbp"){
    g=""
 //   g+="'UNITS = INCH\n"
    g+="JZ,0.25\n"
-	g+="MA,0\n"
+	g+="MB,0\n"
    g+="J2,0,0\n"
 
    g+="PAUSE 3\n"
@@ -975,8 +969,8 @@ for(i=0;i<dots.length;i++){
 
            g+="J2,"+(((dots[i][j].x-xmin)/sf2)/96).toFixed(3)+","+((((ymax-ymin)/sf2)+((ymin-(dots[i][j].y))/sf2))/96).toFixed(3) + "\n" 
 
-			  g+="MA,"+ (Math.atan2(dots[i][j+1].x-dots[i][j].x,dots[i][j+1].y-dots[i][j].y)*(180/Math.PI)).toFixed(3) +"\n"
-           g+="MZ,-0.125\n"
+			  g+="MB,"+ (Math.atan2(dots[i][j+1].x-dots[i][j].x,dots[i][j+1].y-dots[i][j].y)*(180/Math.PI)).toFixed(3) +"\n"
+           g+="MZ" + (document.getElementById("depth").value)+ "\n"
    		  g+="MI,Z,1,0,5,0.05\n"
 			  
 			  a = parseFloat((Math.atan2(dots[i][j+1].x-dots[i][j].x,dots[i][j+1].y-dots[i][j].y)*(180/Math.PI)).toFixed(3))
@@ -1000,14 +994,14 @@ for(i=0;i<dots.length;i++){
 
 						g+="MI,0\n"
 						g+="JZ,0.25\n"				
-						g+="MA,"+ a +"\n"
-           			g+="MZ,-0.125\n"
+						g+="MB,"+ a +"\n"
+           			g+="MZ" + (document.getElementById("depth").value)+ "\n"
    		 			g+="MI,Z,1,0,5,0.05\n"
 						g+="M2,"+(((dots[i][j].x-xmin)/sf2)/96).toFixed(3)+","+((((ymax-ymin)/sf2)+((ymin-(dots[i][j].y))/sf2))/96).toFixed(3) + "\n"
 					}
 
 					else{
-			  			g+="MA,"+ a +"\n"
+			  			g+="MB,"+ a +"\n"
 						g+="M2,"+(((dots[i][j].x-xmin)/sf2)/96).toFixed(3)+","+((((ymax-ymin)/sf2)+((ymin-(dots[i][j].y))/sf2))/96).toFixed(3) + "\n"
 					}
 					
@@ -1024,7 +1018,7 @@ g+="JZ,0.25\n"
 
 }
 
-g+="MA,0\n"
+g+="MB,0\n"
 g+="J3,0,0,0.25\n"
 
 //console.log(g)
