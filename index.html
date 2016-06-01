@@ -859,12 +859,14 @@ for(i=0;i<saw.length;i++){
 				g+="g1x"+((((saw[i][saw[i].length-1].x-xmin)/sf2)/96)*scale).toFixed(3)+"y"+(((((ymax-ymin)/sf2)+((ymin-(saw[i][saw[i].length-1].y))/sf2))/96)*scale).toFixed(3) + "z" + (saw[i][saw[i].length-2].z*scale).toFixed(3) + "a" + saw[i][saw[i].length-1].a +"\n"
 			}
 
+	g+="g0z" + (0.25*scale).toFixed(3) + "\n"
+
 }
 
 
 //	g+="g0z0.25\n"
 //	g+="g4p0.5\n"
-	g+="g0z" + (0.125*scale).toFixed(3) + "\n"
+	g+="g0z" + (0.25*scale).toFixed(3) + "\n"
 	g+="g0x0y0a0\n"
    g+="m30\n"
 
