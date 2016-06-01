@@ -178,21 +178,29 @@ SVGElement.prototype.getTransformToElement = SVGElement.prototype.getTransformTo
     <form method="post">
       <fieldset class="ui-field-contain">
         <label for="depth">CUT DEPTH (inch)</label>
-		  <input name="depth" id="depth" type="number" value="-0.15" step="0.05" autocomplete="off" max="0">
+		  <input name="depth" id="depth" type="number" value="-0.25" step="0.05" autocomplete="off" max="0">
       </fieldset>
     </form>
 
     <form method="post">
       <fieldset class="ui-field-contain">
         <label for="amplitutde">AMPLITUDE (inch)</label>
-		  <input name="amplitude" id="amplitude" type="number" value="0.05" step="0.05" autocomplete="off" min="0">
+		  <input name="amplitude" id="amplitude" type="number" value="0.1" step="0.05" autocomplete="off" min="0">
       </fieldset>
     </form>
 
     <form method="post">
       <fieldset class="ui-field-contain">
         <label for="cutlength">CUT LENGTH (inch)</label>
-		  <input name="cutlength" id="cutlength" type="number" value="0.05" step="0.01" autocomplete="off" min="0.01">
+		  <input name="cutlength" id="cutlength" type="number" value="0.06" step="0.01" autocomplete="off" min="0.01">
+      </fieldset>
+    </form>
+
+
+    <form method="post">
+      <fieldset class="ui-field-contain">
+        <label for="feedrate">FEEDRATE (inch/sec)</label>
+		  <input name="feedrate" id="feedrate" type="number" value="1" step="1" autocomplete="off" min="1">
       </fieldset>
     </form>
 
@@ -760,7 +768,7 @@ var cut_depth = (document.getElementById("depth").value)
 
 if((document.getElementById("code").value)=="gcode"){
 
-	var feed = 20 //inches/min
+	var feed = document.getElementById("feedrate").value*60 //inches/min
 	var scale = 1
 
    g=""
