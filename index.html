@@ -129,20 +129,19 @@ SVGElement.prototype.getTransformToElement = SVGElement.prototype.getTransformTo
       <fieldset class="ui-field-contain">
         <label for="material">MATERIAL TYPE</label>
         <select name="material" id="material">
-          <option value="feed:1000,plunge:200" selected>CARDBOARD</option>
+          <option value="cardboard" selected>CARDBOARD</option>
         </select>
       </fieldset>
     </form>
-
-
-
 
     <form method="post">
       <fieldset class="ui-field-contain">
         <label for="code">FILE TYPE</label>
         <select name="code" id="code">
-          <option value="gcode" selected>GCODE (saw profile)</option>
+          <option value="sbp2" selected>SBP (saw cut)</option>
+          <option value="gcode">GCODE (saw cut)</option>
           <option value="sbp">SBP ("MI" oscillation)</option>
+
 
         </select>
       </fieldset>
@@ -652,10 +651,7 @@ start = index
 }	
 
 
-
 saw = []
-
-//console.log(SVG_saw)
 
 var cutlength=96*document.getElementById("cutlength").value
 
@@ -863,9 +859,6 @@ for(i=0;i<saw.length;i++){
 
 }
 
-
-//	g+="g0z0.25\n"
-//	g+="g4p0.5\n"
 	g+="g0z" + (0.25*scale).toFixed(3) + "\n"
 	g+="g0x0y0a0\n"
    g+="m30\n"
@@ -878,83 +871,6 @@ for(i=0;i<saw.length;i++){
       description : ((((xmax-xmin)/sf2)/96).toFixed(2))+" x "+((((ymax-ymin)/sf2)/96).toFixed(2))+"\""
    });
 
-
-/*
-
-	var feed = 20 //inches/min
-
-   g=""
-   g+="g20\n"
-   g+="g0z0.375\n"
-	g+="g0a0\n"
-   g+="g4p2\n"
-   g+="g1" + feed + "\n"
-
-for(i=0;i<dots.length;i++){
-
-   for(j=0;j<dots[i].length;j++){
-
-           if(j==0){
-
-           		g+="g0x"+(((dots[i][j].x-xmin)/sf2)/96).toFixed(3)+"y"+((((ymax-ymin)/sf2)+((ymin-(dots[i][j].y))/sf2))/96).toFixed(3) + "\n" 
-			  		g+="g0a"+ (Math.atan2(dots[i][j+1].x-dots[i][j].x,dots[i][j+1].y-dots[i][j].y)).toFixed(3) +"\n"
-           		g+="g1z-0.125f"+ (feed/2) + "\n"
-
-           }
-           else{
-			  	if(j<dots[i].length-1){
-
-					g+="g1x"+(((dots[i][j].x-xmin)/sf2)/96).toFixed(3)+"y"+((((ymax-ymin)/sf2)+((ymin-(dots[i][j].y))/sf2))/96).toFixed(3) + "f" + feed + "\n"
-
-
-					var b = (Math.atan2(dots[i][j].x-dots[i][j-1].x,dots[i][j].y-dots[i][j-1].y)).toFixed(3)
-					var a = (Math.atan2(dots[i][j+1].x-dots[i][j].x,dots[i][j+1].y-dots[i][j].y)).toFixed(3)
-
-					if(Math.abs(a-b)>(retract_angle*(Math.PI/180))){
-						g+="g0z0.25\n"				
-						g+="g0a"+ (Math.atan2(dots[i][j+1].x-dots[i][j].x,dots[i][j+1].y-dots[i][j].y)).toFixed(3) +"\n"
-           			g+="g1z-0.125f"+(feed/2)+"\n"
-						g+="g1x"+(((dots[i][j].x-xmin)/sf2)/96).toFixed(3)+"y"+((((ymax-ymin)/sf2)+((ymin-(dots[i][j].y))/sf2))/96).toFixed(3) + "f" + feed + "\n"
-					}
-					else{
-			  			g+="g0a"+ (Math.atan2(dots[i][j+1].x-dots[i][j].x,dots[i][j+1].y-dots[i][j].y)).toFixed(3) +"\n"
-						g+="g1x"+(((dots[i][j].x-xmin)/sf2)/96).toFixed(3)+"y"+((((ymax-ymin)/sf2)+((ymin-(dots[i][j].y))/sf2))/96).toFixed(3) + "f" + feed + "\n"
-					}
-			  	}
-				
-				else{
-
-						g+="g1x"+(((dots[i][j].x-xmin)/sf2)/96).toFixed(3)+"y"+((((ymax-ymin)/sf2)+((ymin-(dots[i][j].y))/sf2))/96).toFixed(3) + "f" + feed + "\n"
-						
-				
-				}
-				
-
-			  }
-           
-   }
-
-	g+="g0z0.25\n"
-
-
-}
-
-
-
-	g+="g0z0.25\n"
-	g+="g4p0.5\n"
-	g+="g0a0\n"
-	g+="g0x0y0z0.375\n"
-   g+="m30\n"
-
-
-   fabmo.submitJob({
-      file : g,
-      filename : image.name + '.g',
-      name : image.name,
-      description : ((((xmax-xmin)/sf2)/96).toFixed(2))+" x "+((((ymax-ymin)/sf2)/96).toFixed(2))+"\""
-   });
-*/
 
 }
 
@@ -970,7 +886,7 @@ else if((document.getElementById("code").value)=="sbp"){
    g+="J2,0,0\n"
 
    g+="PAUSE 3\n"
-   g+="MS,1,0.5\n"  //set feed,plunge
+   g+="MS," + document.getElementById("feedrate").value + "," + document.getElementById("feedrate").value/2 + "\n"  //set feed,plunge
 
 for(i=0;i<dots.length;i++){
 
@@ -1043,6 +959,113 @@ g+="J3,0,0,0.25\n"
 
 
 	}
+
+
+else if((document.getElementById("code").value)=="sbp2"){
+
+	var feed = document.getElementById("feedrate").value //inches/sec
+	var scale = 1
+
+   g=""
+
+	if(document.getElementById("units").value=="mm"){
+		scale = 25.4
+	}
+
+   g+="JZ," + (0.25*scale).toFixed(3) + "\n"
+   g+="PAUSE 3\n"
+   g+="MS," + (document.getElementById("feedrate").value*scale) + "," + ((document.getElementById("feedrate").value/2)*scale) + "\n"
+
+
+
+for(i=0;i<saw.length;i++){
+
+	g+="J4,"+((((saw[i][0].x-xmin)/sf2)/96)*scale).toFixed(3)+","+(((((ymax-ymin)/sf2)+((ymin-(saw[i][0].y))/sf2))/96)*scale).toFixed(3) +  ",," + saw[i][0].a + "\n"
+
+	g+="JZ," + (saw[i][0].z*scale).toFixed(3) + "\n"
+
+   for(j=1;j<saw[i].length-1;j++){
+
+		if(saw[i][j].r==true){
+//
+			if((document.getElementById("saw").value=="sawtooth") && (saw[i][j].z==(parseFloat(document.getElementById("depth").value)))){
+
+				g+="M3,"+((((saw[i][j].x-xmin)/sf2)/96)*scale).toFixed(3)+","+(((((ymax-ymin)/sf2)+((ymin-(saw[i][j].y))/sf2))/96)*scale).toFixed(3) + "," + (saw[i][j].z*scale).toFixed(3) + "\n"
+
+				g+="JZ," + ((parseFloat(document.getElementById("depth").value)*scale)+(parseFloat(document.getElementById("amplitude").value))*scale).toFixed(3) + "\n"
+			}
+
+			else if((document.getElementById("saw").value=="sawtooth") && (saw[i][j].z!=(parseFloat(document.getElementById("depth").value)))){
+
+				g+="M3,"+((((saw[i][j].x-xmin)/sf2)/96)*scale).toFixed(3)+","+(((((ymax-ymin)/sf2)+((ymin-(saw[i][j].y))/sf2))/96)*scale).toFixed(3) + "," + ((document.getElementById("depth").value)*scale).toFixed(3) + "\n"
+
+				g+="JZ," + ((parseFloat(document.getElementById("depth").value)*scale)+(parseFloat(document.getElementById("amplitude").value))*scale).toFixed(3) + "\n"
+			}
+
+//			
+			g+="JZ," + (0.125*scale).toFixed(3) + "\n"
+			g+="JA," + (saw[i][j].a) + "\n"
+
+			g+="JZ," + ((parseFloat(document.getElementById("depth").value)*scale)+(parseFloat(document.getElementById("amplitude").value))*scale).toFixed(3) + "\n"
+	
+		}
+		else{
+
+			
+
+			if((document.getElementById("saw").value=="sawtooth") && (saw[i][j].z==(parseFloat(document.getElementById("depth").value)))){
+
+				g+="M4,"+((((saw[i][j].x-xmin)/sf2)/96)*scale).toFixed(3)+","+(((((ymax-ymin)/sf2)+((ymin-(saw[i][j].y))/sf2))/96)*scale).toFixed(3) + "," + (saw[i][j].z*scale).toFixed(3) + "," + saw[i][j].a +"\n"
+
+				g+="JZ," + ((parseFloat(document.getElementById("depth").value)*scale)+(parseFloat(document.getElementById("amplitude").value))*scale).toFixed(3) + "\n"
+			}
+			else if((document.getElementById("saw").value=="sawtooth") && (saw[i][j].z!=(parseFloat(document.getElementById("depth").value)))){
+				g+="M4,"+((((saw[i][j].x-xmin)/sf2)/96)*scale).toFixed(3)+","+(((((ymax-ymin)/sf2)+((ymin-(saw[i][j].y))/sf2))/96)*scale).toFixed(3) + "," + ((document.getElementById("depth").value)*scale).toFixed(3) + "," + saw[i][j].a +"\n"
+
+				g+="JZ," + ((parseFloat(document.getElementById("depth").value)*scale)+(parseFloat(document.getElementById("amplitude").value))*scale).toFixed(3) + "\n"
+			}
+
+			else if(document.getElementById("saw").value!="sawtooth"){
+
+			g+="M4,"+((((saw[i][j].x-xmin)/sf2)/96)*scale).toFixed(3)+","+(((((ymax-ymin)/sf2)+((ymin-(saw[i][j].y))/sf2))/96)*scale).toFixed(3) + "," + (saw[i][j].z*scale) + "," + saw[i][j-1].a +"\n"
+			}
+
+		}
+
+   	}
+
+			if((document.getElementById("saw").value=="sawtooth") && (saw[i][saw[i].length-1].z==(parseFloat(document.getElementById("depth").value)))){
+
+				g+="M4,"+((((saw[i][saw[i].length-1].x-xmin)/sf2)/96)*scale).toFixed(3)+","+(((((ymax-ymin)/sf2)+((ymin-(saw[i][saw[i].length-1].y))/sf2))/96)*scale).toFixed(3) + "," + (saw[i][saw[i].length-1].z*scale).toFixed(3) + "," + saw[i][saw[i].length-1].a +"\n"
+
+				g+="JZ," + ((parseFloat(document.getElementById("depth").value)*scale)+(parseFloat(document.getElementById("amplitude").value))*scale).toFixed(3) + "\n"
+			}
+
+			else if((document.getElementById("saw").value=="sawtooth") && (saw[i][saw[i].length-1].z!=(parseFloat(document.getElementById("depth").value)))){
+				g+="M4,"+((((saw[i][j].x-xmin)/sf2)/96)*scale).toFixed(3)+","+(((((ymax-ymin)/sf2)+((ymin-(saw[i][saw[i].length-1].y))/sf2))/96)*scale).toFixed(3) + "," + ((document.getElementById("depth").value)*scale).toFixed(3) + "," + saw[i][saw[i].length-1].a +"\n"
+
+				g+="JZ," + ((parseFloat(document.getElementById("depth").value)*scale)+(parseFloat(document.getElementById("amplitude").value))*scale).toFixed(3) + "\n"
+			}
+			else{
+				g+="M4,"+((((saw[i][saw[i].length-1].x-xmin)/sf2)/96)*scale).toFixed(3)+","+(((((ymax-ymin)/sf2)+((ymin-(saw[i][saw[i].length-1].y))/sf2))/96)*scale).toFixed(3) + "," + (saw[i][saw[i].length-2].z*scale).toFixed(3) + "," + saw[i][saw[i].length-1].a +"\n"
+			}
+
+   g+="JZ," + (0.25*scale).toFixed(3) + "\n"
+
+}
+
+	g+="M4,0,0,,0\n"
+
+
+
+   fabmo.submitJob({
+      file : g,
+      filename : image.name + '.sbp',
+      name : image.name,
+      description : ((((xmax-xmin)/sf2)/96).toFixed(2))+" x "+((((ymax-ymin)/sf2)/96).toFixed(2))+" \""
+   });
+
+}
 
 }
 
