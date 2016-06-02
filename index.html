@@ -57,8 +57,6 @@ SVGElement.prototype.getTransformToElement = SVGElement.prototype.getTransformTo
 
 <div id="shape">
 
-
-
 <svg id="svg" version="1.1" xmlns="http://www.w3.org/2000/svg" height="628" width="726"><polygon points="0,150 0,50 100,0 200,50 200,150 100,200 0,150" fill="white" stroke="black" stroke-width="4"/></svg>
 
 </div>
@@ -67,12 +65,6 @@ SVGElement.prototype.getTransformToElement = SVGElement.prototype.getTransformTo
 
 <div data-role="page" id="pageone">
   <div data-role="header">
-
-<!--
- 
-      <a href="#" class="ui-btn ui-corner-all ui-shadow ui-icon-eye ui-btn-icon-left" onclick="toggleFullScreen();">FULLSCREEN</a>
-     <a href="#" class="ui-btn ui-corner-all ui-shadow ui-icon-info ui-btn-icon-left" onclick="info();">JOB INFO</a> 
--->
 
     <h1>CARDBOARD</h1>
 
@@ -97,21 +89,12 @@ SVGElement.prototype.getTransformToElement = SVGElement.prototype.getTransformTo
        <input type="file" name="files[]" id="file" multiple data-role="none"/>
     </span>
 
-<!--
-<a href="#" id="resize" class="ui-btn ui-corner-all ui-shadow ui-icon-gear ui-btn-icon-left">RESIZE</a>
--->
-
       <a href="#" class="ui-btn ui-corner-all ui-shadow ui-icon-action ui-btn-icon-right" onclick="make();">SUBMIT JOB</a>
   </div>
 </div> 
 
-
 <div data-role="page" id="pagezero">
   <div data-role="header">
-
-<!--
-    <a href="#" class="ui-btn ui-corner-all ui-shadow ui-icon-eye ui-btn-icon-left" onclick="toggleFullScreen();">FULLSCREEN</a>
--->
 
     <h1>SETUP</h1>
 
@@ -141,7 +124,6 @@ SVGElement.prototype.getTransformToElement = SVGElement.prototype.getTransformTo
           <option value="sbp2" selected>SBP (saw cut)</option>
           <option value="gcode">GCODE (saw cut)</option>
           <option value="sbp">SBP ("MI" oscillation)</option>
-
 
         </select>
       </fieldset>
@@ -285,10 +267,6 @@ ctx.strokeStyle = "#333"
 
 }
 
-//TODO
-
-//angle > 360
-//
 
 var g = ""
 var SVG = []
@@ -403,7 +381,6 @@ function svg2pg(){
                dots.push([])
                shape_no=dots.length-1
                dots[shape_no].push({x:svg_paths[i][j][1],y:svg_paths[i][j][2]})
-					//console.log(svg_paths[i][j][1] + " " + svg_paths[i][j][2])
             }
 
             else if((svg_paths[i][j][0].startsWith('L')==true) || (svg_paths[i][j][0].startsWith('l')==true)){
@@ -454,20 +431,17 @@ function svg2pg(){
    xmin = Math.min.apply(Math, xmin)
    ymax = Math.max.apply(Math, ymax)
    ymin = Math.min.apply(Math, ymin)
-   //sf2 = ((xmax-xmin)/target_width)
+
 
 scale()
 
 sf2 = 1
 
 draw()
-//	sf2 = ((xmax-xmin)/96) //inches
 
 }
 
 function scale(){
-
-//console.log(dots)
 
 for(i=0;i<dots.length;i++){
    dots[i].push(dots[i][0])
@@ -478,8 +452,7 @@ for(i=0;i<dots.length;i++){
 	for(i=0;i<dots.length;i++){
 		for(j=0;j<dots[i].length;j++){
 
-	//	console.log(dots[i][j].x*96)
-	dots[i][j] = ({x:dots[i][j].x*96,y:dots[i][j].y*96})
+			dots[i][j] = ({x:dots[i][j].x*96,y:dots[i][j].y*96})
 	
 		}
 	
@@ -509,9 +482,7 @@ $( "#resize" ).click(function() {
    target_width = eval(window.prompt("ENTER NEW WIDTH (INCH)")*96)
 
    if((target_width!=0)){
-		//sf2=1
       sf2 = ((xmax-xmin)/target_width)
-		//sf2 = ((xmax-xmin)/96) //96dpi
    }
 	
 });
@@ -521,28 +492,6 @@ $(window).resize(function(){
 	draw()
 }); 
 
-
-// toggle full screen
-function toggleFullScreen() {
-   if (!document.fullscreenElement &&    // alternative standard method
-      !document.mozFullScreenElement && !document.webkitFullscreenElement) {  // current working methods
-    if (document.documentElement.requestFullscreen) {
-      document.documentElement.requestFullscreen()
-    } else if (document.documentElement.mozRequestFullScreen) {
-      document.documentElement.mozRequestFullScreen()
-    } else if (document.documentElement.webkitRequestFullscreen) {
-      document.documentElement.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT)
-    }
-  } else {
-    if (document.cancelFullScreen) {
-      document.cancelFullScreen()
-    } else if (document.mozCancelFullScreen) {
-      document.mozCancelFullScreen()
-    } else if (document.webkitCancelFullScreen) {
-      document.webkitCancelFullScreen()
-    }
-  }
-}
 
 function sawtooth(){
 
@@ -554,14 +503,14 @@ var d
 
 for(i=0;i<dots.length;i++){
 
-	a = (parseFloat((Math.atan2(dots[i][1].x-dots[i][0].x,dots[i][1].y-dots[i][0].y)*(180/Math.PI)).toFixed(2)))
+	a = (parseFloat((Math.atan2(dots[i][1].x-dots[i][0].x,dots[i][1].y-dots[i][0].y)*(180/Math.PI))))
 	dots[i][0].a = a
    dots[i][0].r = true
 	dots[i][dots[i].length-1].r = true
 
    for(j=1;j<dots[i].length-1;j++){
 			b = a
-			a = (parseFloat((Math.atan2(dots[i][j+1].x-dots[i][j].x,dots[i][j+1].y-dots[i][j].y)*(180/Math.PI)).toFixed(2)))
+			a = (parseFloat((Math.atan2(dots[i][j+1].x-dots[i][j].x,dots[i][j+1].y-dots[i][j].y)*(180/Math.PI))))
 			
 
 			if(a<=0){
@@ -587,15 +536,15 @@ for(i=0;i<dots.length;i++){
 			
 			if(d>(retract_angle) ){
 
-			dots[i][j].r = true				
+				dots[i][j].r = true				
 			
 			}
 			else{
-			dots[i][j].r = false
-			}
+				dots[i][j].r = false
+				}
 
-         dots[i][j].a = a
-			//dots[i][j].d = d
+        		 dots[i][j].a = a
+
 			
    	}
 }
@@ -610,31 +559,29 @@ var start = 0
 
 for(i=0;i<dots.length;i++){
 
-//SVG_saw.push([[]])
 start = index
 
 	for(j=0;j<dots[i].length-1;j++){
 	
 	if((dots[i][j].r==true)&&(j==0)){
-	//SVG_saw[i].push("hi")	
-	SVG_saw.push("M"+(dots[i][j].x).toFixed(3)+" "+(dots[i][j].y).toFixed(3))
-	index++
-	SVG_saw[SVG_saw.length-1]+=(" L "+(dots[i][j+1].x).toFixed(3)+" "+(dots[i][j+1].y).toFixed(3))
+	
+		SVG_saw.push("M"+(dots[i][j].x).toFixed(3)+" "+(dots[i][j].y).toFixed(3))
+		index++
+		SVG_saw[SVG_saw.length-1]+=(" L "+(dots[i][j+1].x).toFixed(3)+" "+(dots[i][j+1].y).toFixed(3))
 	}
 
 	
 	else if((dots[i][j].r==true)&&(j!=0)){
 	
-	SVG_saw[SVG_saw.length-1]+=(" L "+(dots[i][j].x).toFixed(3)+" "+(dots[i][j].y).toFixed(3))
-	
-	SVG_saw.push("M"+(dots[i][j].x).toFixed(3)+" "+(dots[i][j].y).toFixed(3))
-	index++	
-	SVG_saw[SVG_saw.length-1]+=(" L "+(dots[i][j+1].x).toFixed(3)+" "+(dots[i][j+1].y).toFixed(3))
+		SVG_saw[SVG_saw.length-1]+=(" L "+(dots[i][j].x).toFixed(3)+" "+(dots[i][j].y).toFixed(3))
+		SVG_saw.push("M"+(dots[i][j].x).toFixed(3)+" "+(dots[i][j].y).toFixed(3))
+		index++	
+		SVG_saw[SVG_saw.length-1]+=(" L "+(dots[i][j+1].x).toFixed(3)+" "+(dots[i][j+1].y).toFixed(3))
 	
 	}
 	
 	else{
-	SVG_saw[SVG_saw.length-1]+=(" L "+(dots[i][j].x).toFixed(3)+" "+(dots[i][j].y).toFixed(3))
+		SVG_saw[SVG_saw.length-1]+=(" L "+(dots[i][j].x).toFixed(3)+" "+(dots[i][j].y).toFixed(3))
 	}	
 	
 	}
@@ -671,52 +618,75 @@ saw[i].push(dots[i][0])
 
 		}
 
-saw[i].push({x:parseFloat((Raphael.getPointAtLength(paths[i][j], (Raphael.getTotalLength(paths[i][j]))).x).toFixed(6)),y:parseFloat((Raphael.getPointAtLength(paths[i][j], (Raphael.getTotalLength(paths[i][j]))).y).toFixed(6))})
+	saw[i].push({x:parseFloat((Raphael.getPointAtLength(paths[i][j], (Raphael.getTotalLength(paths[i][j]))).x).toFixed(6)),y:parseFloat((Raphael.getPointAtLength(paths[i][j], (Raphael.getTotalLength(paths[i][j]))).y).toFixed(6))})
 		
 
-}
+	}
 
 
 }
 
 //console.log(saw)
 
+var c = 0
+
+var angle_offset = 0
+
 for(i=0;i<saw.length;i++){
 
-	a = 0-(parseFloat((Math.atan2((saw[i][0].x-saw[i][1].x),(saw[i][0].y-saw[i][1].y))*(180/Math.PI)).toFixed(2)))
-   //console.log(a)
-   for(j=0;j<saw[i].length-1;j++){
-	b = a
+	angle_offset = 0
+	a = 0-(parseFloat((Math.atan2((saw[i][0].x-saw[i][1].x),(saw[i][0].y-saw[i][1].y))*(180/Math.PI))))
 	//console.log(a)
 
-	console.log(a)
+   for(j=0;j<saw[i].length-1;j++){
+		b = a
+		c = a+angle_offset
+		a = 0-(parseFloat((Math.atan2((saw[i][j].x-saw[i][j+1].x),(saw[i][j].y-saw[i][j+1].y))*(180/Math.PI))))
 
-	a = 0-(parseFloat((Math.atan2((saw[i][j].x-saw[i][j+1].x),(saw[i][j].y-saw[i][j+1].y))*(180/Math.PI)).toFixed(2)))
-	
-	saw[i][j].a=a
+		if(Math.abs(b-a)>retract_angle){
+			
+			var near = (Math.min(Math.abs(b-a),Math.abs(b-(a-360)),Math.abs(b-(a-360))))
+			
+			if(near==(Math.abs(b-(a-360)))){
 
-	if(Math.abs(b-a)>retract_angle){
-		saw[i][j].r=true
+				angle_offset+=-360
+			
+			}
+			if(near==(Math.abs(b-(a+360)))){
+
+				angle_offset+=360
+			
+			}
+			
+		}	
+
+		saw[i][j].a=a+angle_offset
+
+		if( (Math.abs(a-b) )>retract_angle){			
+
+				if( Math.abs((Math.abs(c)) - (Math.abs(a+angle_offset)))>retract_angle){		
+
+				//console.log(a+angle_offset)
+				saw[i][j].r=true
+
+				}
+				
+		}
+
+		else{
+			saw[i][j].r=false
+		}
 	}
 
-	else{
-		saw[i][j].r=false
-	}
-	
-
-	}
-
-	console.log(a)	
 	saw[i][saw[i].length-1].a=a
 	saw[i][saw[i].length-1].r=false
 
 }
 
-console.log(saw)
+//console.log(saw)
 
 
 var z=0  
-
 
 for(i=0;i<saw.length;i++){
 	
@@ -764,7 +734,7 @@ var cut_depth = (document.getElementById("depth").value)
 
 if((document.getElementById("code").value)=="gcode"){
 
-	var feed = document.getElementById("feedrate").value*60 //inches/min
+	var feed = document.getElementById("feedrate").value*60 //inch/min
 	var scale = 1
 
    g=""
@@ -880,7 +850,6 @@ else if((document.getElementById("code").value)=="sbp"){
 	var b = 0	 
 
    g=""
-//   g+="'UNITS = INCH\n"
    g+="JZ,0.25\n"
 	g+="MB,0\n"
    g+="J2,0,0\n"
@@ -901,8 +870,6 @@ for(i=0;i<dots.length;i++){
 			  
 			  a = parseFloat((Math.atan2(dots[i][j+1].x-dots[i][j].x,dots[i][j+1].y-dots[i][j].y)*(180/Math.PI)).toFixed(3))
 
-			  //console.log(a + " f")
-
            }
            else{
 			  	if(j<dots[i].length-1){
@@ -910,13 +877,8 @@ for(i=0;i<dots.length;i++){
 					b = a
 
 					a = parseFloat((Math.atan2(dots[i][j+1].x-dots[i][j].x,dots[i][j+1].y-dots[i][j].y)*(180/Math.PI)).toFixed(3))					
-					
-					//console.log(a-b)
-					//console.log(a)
 
 					if((Math.abs(a-b))>(retract_angle)){
-						
-						//console.log(Math.abs(b-a))
 
 						g+="MI,0\n"
 						g+="JZ,0.25\n"				
@@ -946,9 +908,6 @@ g+="JZ,0.25\n"
 
 g+="MB,0\n"
 g+="J3,0,0,0.25\n"
-
-//console.log(g)
-
 
    fabmo.submitJob({
       file : g,
