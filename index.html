@@ -124,7 +124,6 @@ SVGElement.prototype.getTransformToElement = SVGElement.prototype.getTransformTo
           <option value="sbp2" selected>SBP (saw cut)</option>
           <option value="gcode">GCODE (saw cut)</option>
           <option value="sbp">SBP ("MI" oscillation)</option>
-
         </select>
       </fieldset>
     </form>
@@ -181,7 +180,7 @@ SVGElement.prototype.getTransformToElement = SVGElement.prototype.getTransformTo
     <form method="post">
       <fieldset class="ui-field-contain">
         <label for="feedrate">FEEDRATE (inch/sec)</label>
-		  <input name="feedrate" id="feedrate" type="number" value="1" step="0.01" autocomplete="off" min="0.01">
+		  <input name="feedrate" id="feedrate" type="number" value="1" step="0.1" autocomplete="off" min="0.1">
       </fieldset>
     </form>
 
@@ -850,6 +849,11 @@ else if((document.getElementById("code").value)=="sbp"){
 	var b = 0	 
 
    g=""
+
+	if(document.getElementById("units").value=="mm"){
+		g+="VD,4,1,1\n"
+	}
+
    g+="JZ,0.25\n"
 	g+="MB,0\n"
    g+="J2,0,0\n"
@@ -906,7 +910,7 @@ g+="JZ,0.25\n"
 
 }
 
-g+="MB,0\n"
+g+="JB,0\n"
 g+="J3,0,0,0.25\n"
 
    fabmo.submitJob({
@@ -929,6 +933,7 @@ else if((document.getElementById("code").value)=="sbp2"){
 
 	if(document.getElementById("units").value=="mm"){
 		scale = 25.4
+		g+="VD,4,1,1\n"
 	}
 
    g+="JZ," + (0.25*scale).toFixed(3) + "\n"
@@ -1013,7 +1018,7 @@ for(i=0;i<saw.length;i++){
 
 }
 
-	g+="M4,0,0,,0\n"
+	g+="J4,0,0,,0\n"
 
 
 
