@@ -205,9 +205,8 @@ ctx.canvas.width = $(window).width()-30
 
 ctx.clearRect(0,0,ctx.canvas.width,ctx.canvas.height);
 ctx.fillStyle = "#E0E0F8"
-ctx.lineWidth = 1
-ctx.fillStyle = "#E0E0F8"
 ctx.strokeStyle = "#ff0000"
+ctx.lineWidth = 1
 
 sf=((ctx.canvas.height-5)/(ymax-ymin))
 
@@ -218,25 +217,13 @@ ctx.fillRect((xmin*sf)-2,(ymin*sf)-2,((xmax-xmin)*sf)+4,((ymax-ymin)*sf)+4)
 ctx.fill()
 
    for(i=0;i<dots.length;i++){
-   ctx.beginPath()
-
-		
+   	ctx.beginPath()
       for(j=0;j<dots[i].length;j++){
               ctx.lineTo(dots[i][j].x*sf,dots[i][j].y*sf)
       }
-   ctx.stroke()
+   	ctx.stroke()
    }
 
-
-   for(i=0;i<saw.length;i++){
-   ctx.beginPath()
-
-		
-      for(j=0;j<saw[i].length;j++){
-              //ctx.lineTo(saw[i][j].x*sf,saw[i][j].y*sf)
-      }
-   ctx.stroke()
-   }
 
 ctx.strokeStyle = "#333"
 
@@ -644,8 +631,10 @@ for(i=0;i<saw.length;i++){
 
 		if(Math.abs(b-a)>retract_angle){
 			
-			var near = (Math.min(Math.abs(b-a),Math.abs(b-(a-360)),Math.abs(b-(a-360))))
+			var near = (Math.min(Math.abs(b-a),Math.abs(b-(a+360)),Math.abs(b-(a-360))))
 			
+			//console.log(near)
+
 			if(near==(Math.abs(b-(a-360)))){
 
 				angle_offset+=-360
@@ -659,9 +648,11 @@ for(i=0;i<saw.length;i++){
 			
 		}	
 
-		saw[i][j].a=a+angle_offset
+		saw[i][j].a = ((a+angle_offset).toFixed(2))
 
 		if( (Math.abs(a-b) )>retract_angle){			
+
+				//console.log(a+angle_offset)
 
 				if( Math.abs((Math.abs(c)) - (Math.abs(a+angle_offset)))>retract_angle){		
 
@@ -677,7 +668,7 @@ for(i=0;i<saw.length;i++){
 		}
 	}
 
-	saw[i][saw[i].length-1].a=a
+	saw[i][saw[i].length-1].a = (a.toFixed(2))
 	saw[i][saw[i].length-1].r=false
 
 }
