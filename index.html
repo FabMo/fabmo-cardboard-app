@@ -215,7 +215,6 @@ ctx.canvas.width = $(window).width()-30
 
 ctx.clearRect(0,0,ctx.canvas.width,ctx.canvas.height);
 ctx.fillStyle = "#E0E0F8"
-ctx.strokeStyle = "#0000ff"
 ctx.lineWidth = 1
 
 sf=((ctx.canvas.height-5)/(ymax-ymin))
@@ -226,10 +225,23 @@ ctx.beginPath()
 ctx.fillRect((xmin*sf)-2,(ymin*sf)-2,((xmax-xmin)*sf)+4,((ymax-ymin)*sf)+4)
 ctx.fill()
 
-   for(i=0;i<dots.length;i++){
+   for(i=0;i<saw.length;i++){
+
+
+
+if(saw[i][0].s==true){
+	ctx.strokeStyle = "#00ff00"
+	
+	
+}
+else{
+	ctx.strokeStyle = "#0000ff"
+}
+
    	ctx.beginPath()
-      for(j=0;j<dots[i].length;j++){
-              ctx.lineTo(dots[i][j].x*sf,dots[i][j].y*sf)
+
+      for(j=0;j<saw[i].length;j++){
+              ctx.lineTo(saw[i][j].x*sf,saw[i][j].y*sf)
       }
    	ctx.stroke()
    }
@@ -258,8 +270,6 @@ ctx.strokeStyle = "#333"
 				   	//ctx.moveTo(dots[i][j].x*sf,dots[i][j].y*sf)
 		    			//ctx.arc(dots[i][j].x*sf,dots[i][j].y*sf,(1),0,2*Math.PI)
 						//console.log(i + " " + j)
-
-
 
 				   	ctx.moveTo(saw[i][j].x*sf,saw[i][j].y*sf)
 
@@ -506,6 +516,39 @@ sawtooth()
 }
 
 
+$("#myCanvas").bind('click', function(e) {
+
+//TODO
+//flip score & no cut select
+
+
+	var score = {x:(e.clientX-20),y:(e.clientY-100)}
+
+	for(i=0;i<saw.length;i++){
+		for(j=0;j<saw[i].length;j++){
+
+		if(((Math.abs(score.x-((saw[i][j].x-xmin)*sf)))<4)&&((Math.abs(score.y-((saw[i][j].y-ymin)*sf)))<4)){
+
+		if(saw[i][0].s==false){		
+			saw[i][0].s=true
+		}
+		else{
+			saw[i][0].s=false
+
+		}
+			i=saw.length-1
+			j=saw[i].length-1
+		
+		}
+
+		}
+	}
+
+	draw()
+});
+
+
+
 $( "#resize" ).click(function() {
 
    target_width = eval(window.prompt("ENTER NEW WIDTH (INCH)")*96)
@@ -584,8 +627,6 @@ SVG_saw = []
 var paths = []
 var index = 0
 var start = 0
-
-
 
 for(i=0;i<dots.length;i++){
 
@@ -746,6 +787,8 @@ for(i=0;i<saw.length;i++){
 	
 	z=0
 
+	saw[i][0].s=false
+
    for(j=0;j<saw[i].length;j++){
 		if(z!=0){
 			z=0
@@ -766,7 +809,12 @@ if(document.getElementById("offset").checked==true){
 	offset()
 }
 
+
+
+
 }
+
+
 
 
 function offset(){
@@ -784,9 +832,22 @@ for(i=0;i<saw.length;i++){
 
 		o = 3
 
-		//if saw[i].length=1,2,3
+		//TODO
+
+		if(saw[i].length<3){
+			console.log(saw[i])
+		}
+		else if(saw[i][j+2]==undefined){
+			console.log(saw[i][j+1])
+			console.log(i + " " + j)
+			console.log(" ")
+		}
+			else if((saw[i][j].r==true)&&(saw[i][j+1].r==true)){
+		}
+
+		//
 		
-		if(saw[i][j+1].r==true){
+		else if(saw[i][j+1].r==true){
 
 			exacto[i].push({x:(o*saw[i][j+1].x+(1-o)*saw[i][j].x),y:(o*saw[i][j+1].y+(1-o)*saw[i][j].y),a:parseFloat(saw[i][j].a),r:false})
 			o=4
@@ -795,11 +856,11 @@ for(i=0;i<saw.length;i++){
 			}
 		else if((saw[i][j].r==true)||(j==0)){
 
-		console.log(saw[i][j+2])
+			//console.log(saw[i][j+2])
 
 			if(j==0){
-				o=0
-				exacto[i].push({x:(o*saw[i][j+2].x+(1-o)*saw[i][j+1].x),y:(o*saw[i][j+2].y+(1-o)*saw[i][j+1].y),a:parseFloat(saw[i][j].a),r:false})
+				//o=0
+				//exacto[i].push({x:(o*saw[i][j+2].x+(1-o)*saw[i][j+1].x),y:(o*saw[i][j+2].y+(1-o)*saw[i][j+1].y),a:parseFloat(saw[i][j].a),r:false})
 				o=1
 				exacto[i].push({x:(o*saw[i][j+2].x+(1-o)*saw[i][j+1].x),y:(o*saw[i][j+2].y+(1-o)*saw[i][j+1].y),a:parseFloat(saw[i][j].a),r:false})
 			}
@@ -811,8 +872,6 @@ for(i=0;i<saw.length;i++){
 			o=2
 			exacto[i].push({x:(o*saw[i][j+2].x+(1-o)*saw[i][j+1].x),y:(o*saw[i][j+2].y+(1-o)*saw[i][j+1].y),a:parseFloat(saw[i][j].a),r:false})	
 			}
-			
-
 		
 
 		else if(j==saw[i].length-2){
@@ -839,16 +898,30 @@ for(i=0;i<saw.length;i++){
 
 }
 
-console.log(exacto)
+//console.log(exacto)
 
 saw = exacto
+
 }
 
 function make(){
 
 
+var score_depth = parseFloat((document.getElementById("depth").value)/2)
+var score_amplitude = parseFloat((document.getElementById("amplitude").value)/2)
+
 for(i=0;i<saw.length;i++){
 	
+	if(saw[i][0].s==true){
+	document.getElementById("depth").value=score_depth
+	document.getElementById("amplitude").value=score_amplitude
+	}
+	else{
+   document.getElementById("depth").value=(score_depth*2)
+	document.getElementById("amplitude").value=(score_amplitude*2)
+	}	
+
+
 	z=(parseFloat(document.getElementById("depth").value))
 
    for(j=0;j<saw[i].length;j++){
@@ -1074,6 +1147,18 @@ else if((document.getElementById("code").value)=="sbp2"){
 
 
 for(i=0;i<saw.length;i++){
+
+
+	if(saw[i][0].s==true){
+	document.getElementById("depth").value=score_depth
+	document.getElementById("amplitude").value=score_amplitude
+	}
+	else{
+   document.getElementById("depth").value=(score_depth*2)
+	document.getElementById("amplitude").value=(score_amplitude*2)
+	}	
+
+
 
 	g+="J4,"+((((saw[i][0].x-xmin)/sf2)/96)*scale).toFixed(3)+","+(((((ymax-ymin)/sf2)+((ymin-(saw[i][0].y))/sf2))/96)*scale).toFixed(3) +  ",," + saw[i][0].a + "\n"
 
