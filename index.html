@@ -101,7 +101,7 @@ SVGElement.prototype.getTransformToElement = SVGElement.prototype.getTransformTo
     <div data-role="navbar">
       <ul>
         <li><a href="#pagezero" class="ui-btn-active ui-state-persist">SETUP</a></li>
-        <li><a href="#pageone" onclick="sawtooth(); draw();">LOAD SVG</a></li>
+        <li><a href="#pageone" onclick="sawtooth();">LOAD SVG</a></li>
 
       </ul>
     </div>
@@ -197,7 +197,7 @@ SVGElement.prototype.getTransformToElement = SVGElement.prototype.getTransformTo
 </div>
   <div data-role="footer" style="text-align:center;">
 
-    <a href="#pageone" class="ui-btn ui-corner-all ui-shadow ui-icon-carat-r ui-btn-icon-right" onclick="sawtooth(); draw();">LOAD SVG</a>
+    <a href="#pageone" class="ui-btn ui-corner-all ui-shadow ui-icon-carat-r ui-btn-icon-right" onclick="sawtooth();">LOAD SVG</a>
   </div>
 </div> 
 
@@ -227,32 +227,45 @@ ctx.fill()
 
    for(i=0;i<saw.length;i++){
 
-
-
-if(saw[i][0].s==true){
-	ctx.strokeStyle = "#00ff00"
-	
-	
-}
-else{
-	ctx.strokeStyle = "#0000ff"
-}
+		if(saw[i][0].cut=='cut'){
+			ctx.strokeStyle = "#aaa"
+		}
+		else if(saw[i][0].cut=='score'){
+			ctx.strokeStyle = "#00ff00"
+		}
+		else if(saw[i][0].cut=='off'){
+			ctx.strokeStyle = "#ccc"
+		}
 
    	ctx.beginPath()
-
-      for(j=0;j<saw[i].length;j++){
+      	for(j=0;j<saw[i].length;j++){
               ctx.lineTo(saw[i][j].x*sf,saw[i][j].y*sf)
-      }
+      	}
    	ctx.stroke()
+
    }
 
 
 ctx.strokeStyle = "#333"
 
    for(i=0;i<saw.length;i++){
+
+		if(saw[i][0].cut=='cut'){
+			ctx.strokeStyle = "#0000ff"
+		}
+		else if(saw[i][0].cut=='score'){
+			ctx.strokeStyle = "#00aa00"
+		}
+		else if(saw[i][0].cut=='off'){
+			ctx.strokeStyle = "#aaa"
+		}
+
+
    
       for(j=0;j<saw[i].length;j++){
 
+
+						/*
 						if(saw[i][j].r==true){
 							ctx.strokeStyle = "#fff"
 						}
@@ -265,11 +278,9 @@ ctx.strokeStyle = "#333"
 						else{
 							ctx.strokeStyle = "#333"
 						}
-					//if(dots[i][j].r==true){
+						*/
+
 					ctx.beginPath()
-				   	//ctx.moveTo(dots[i][j].x*sf,dots[i][j].y*sf)
-		    			//ctx.arc(dots[i][j].x*sf,dots[i][j].y*sf,(1),0,2*Math.PI)
-						//console.log(i + " " + j)
 
 				   	ctx.moveTo(saw[i][j].x*sf,saw[i][j].y*sf)
 
@@ -281,7 +292,7 @@ ctx.strokeStyle = "#333"
 							}
 		    			
    				ctx.stroke()
-					//}
+					
       }
 
 	}
@@ -290,7 +301,6 @@ ctx.strokeStyle = "#333"
 	ctx.fillStyle = "#000"
 	ctx.font = "14px Arial"
 	ctx.fillText( (((xmax-xmin)/sf2)/96).toFixed(2) + " x " + (((ymax-ymin)/sf2)/96).toFixed(2) + "\"",(xmax*sf)+5,ymax*sf)
-
 
 }
 
@@ -359,6 +369,12 @@ function addImg(imgsrc) {
 
    SVG2 = SVG2.replace('<svg','<svg id="svg"')
 
+	var defs = new RegExp("<defs[\\d\\D]*?\/defs>", "g")
+
+	SVG2 = SVG2.replace(defs, "")
+
+	//console.log(SVG2)
+
 	svg_units = SVG2.match(/width=\"(.*?)\"/);
 
 if(svg_units==null){
@@ -403,7 +419,7 @@ function svg2pg(){
    var shape_no = 0
 
    for(i=0;i<svg_paths.length;i++){
-   for(j=0;j<svg_paths[i].length;j++){
+   	for(j=0;j<svg_paths[i].length;j++){
             if((svg_paths[i][j][0].startsWith('M')==true) || (svg_paths[i][j][0].startsWith('m')==true)){
                dots.push([])
                shape_no=dots.length-1
@@ -435,7 +451,7 @@ function svg2pg(){
 					}
            
             }
-   	}
+   		}
 
    }
 
@@ -461,11 +477,11 @@ function svg2pg(){
    ymin = Math.min.apply(Math, ymin)
 
 
-scale()
+	scale()
 
-sf2 = 1
+	sf2 = 1
 
-draw()
+	//draw()
 
 }
 
@@ -518,23 +534,22 @@ sawtooth()
 
 $("#myCanvas").bind('click', function(e) {
 
-//TODO
-//flip score & no cut select
-
-
 	var score = {x:(e.clientX-20),y:(e.clientY-100)}
 
 	for(i=0;i<saw.length;i++){
 		for(j=0;j<saw[i].length;j++){
 
-		if(((Math.abs(score.x-((saw[i][j].x-xmin)*sf)))<4)&&((Math.abs(score.y-((saw[i][j].y-ymin)*sf)))<4)){
+		if(((Math.abs(score.x-((saw[i][j].x-xmin)*sf)))<5)&&((Math.abs(score.y-((saw[i][j].y-ymin)*sf)))<5)){
 
-		if(saw[i][0].s==false){		
-			saw[i][0].s=true
+		if(saw[i][0].cut=='off'){		
+			saw[i][0].cut='cut'
+		}
+		else if(saw[i][0].cut=='cut'){
+			saw[i][0].cut='score'
+
 		}
 		else{
-			saw[i][0].s=false
-
+			saw[i][0].cut='off'
 		}
 			i=saw.length-1
 			j=saw[i].length-1
@@ -617,8 +632,8 @@ for(i=0;i<dots.length;i++){
 
         		 dots[i][j].a = a
 
-			
    	}
+
 }
 
 SVG_saw = []
@@ -640,7 +655,6 @@ start = index
 		index++
 		SVG_saw[SVG_saw.length-1]+=(" L "+(dots[i][j+1].x).toFixed(3)+" "+(dots[i][j+1].y).toFixed(3))
 	}
-
 	
 	else if((dots[i][j].r==true)&&(j!=0)){
 	
@@ -648,7 +662,6 @@ start = index
 		SVG_saw.push("M"+(dots[i][j].x).toFixed(3)+" "+(dots[i][j].y).toFixed(3))
 		index++	
 		SVG_saw[SVG_saw.length-1]+=(" L "+(dots[i][j+1].x).toFixed(3)+" "+(dots[i][j+1].y).toFixed(3))
-	
 	}
 	
 	else{
@@ -756,16 +769,9 @@ for(i=0;i<saw.length;i++){
 		saw[i][j].a = ((a+angle_offset).toFixed(2))
 
 		if( (Math.abs(a-b) )>retract_angle){			
-
-				//console.log(a+angle_offset)
-
 				if( Math.abs((Math.abs(c)) - (Math.abs(a+angle_offset)))>retract_angle){		
-
-				//console.log(a+angle_offset)
-				saw[i][j].r=true
-
-				}
-				
+					saw[i][j].r=true
+				}	
 		}
 
 		else{
@@ -780,14 +786,11 @@ for(i=0;i<saw.length;i++){
 
 //console.log(saw)
 
-
 var z=0  
 
 for(i=0;i<saw.length;i++){
 	
 	z=0
-
-	saw[i][0].s=false
 
    for(j=0;j<saw[i].length;j++){
 		if(z!=0){
@@ -803,18 +806,17 @@ for(i=0;i<saw.length;i++){
 	}
 
 
-
-
 if(document.getElementById("offset").checked==true){
 	offset()
 }
 
-
-
-
+for(i=0;i<saw.length;i++){
+	saw[i][0].cut='cut'
 }
 
+draw()
 
+}
 
 
 function offset(){
@@ -822,6 +824,7 @@ function offset(){
 	var exacto = []
 
 	var o
+
 	//console.log(o)
 
 for(i=0;i<saw.length;i++){
@@ -834,19 +837,39 @@ for(i=0;i<saw.length;i++){
 
 		//TODO
 
+/*
 		if(saw[i].length<3){
-			console.log(saw[i])
+//			console.log(saw[i])
 		}
 		else if(saw[i][j+2]==undefined){
-			console.log(saw[i][j+1])
-			console.log(i + " " + j)
-			console.log(" ")
+//			console.log(saw[i][j+1])
+//			console.log(i + " " + j)
+//			console.log(" ")
 		}
 			else if((saw[i][j].r==true)&&(saw[i][j+1].r==true)){
 		}
 
 		//
-		
+
+*/
+		if(saw[i].length<4){
+
+			o=0
+			exacto[i].push({x:(o*saw[i][j+1].x+(1-o)*saw[i][j].x),y:(o*saw[i][j+1].y+(1-o)*saw[i][j].y),a:parseFloat(saw[i][j].a),r:false})
+
+			o=1
+			exacto[i].push({x:(o*saw[i][j+1].x+(1-o)*saw[i][j].x),y:(o*saw[i][j+1].y+(1-o)*saw[i][j].y),a:parseFloat(saw[i][j].a),r:false})
+
+			o=2
+exacto[i].push({x:(o*saw[i][j+1].x+(1-o)*saw[i][j].x),y:(o*saw[i][j+1].y+(1-o)*saw[i][j].y),a:parseFloat(saw[i][j].a),r:false})
+			o=3
+
+			exacto[i].push({x:(o*saw[i][j+1].x+(1-o)*saw[i][j].x),y:(o*saw[i][j+1].y+(1-o)*saw[i][j].y),a:parseFloat(saw[i][j].a),r:false})
+			o=4
+			exacto[i].push({x:(o*saw[i][j+1].x+(1-o)*saw[i][j].x),y:(o*saw[i][j+1].y+(1-o)*saw[i][j].y),a:parseFloat(saw[i][j].a),r:true})
+
+
+		}		
 		else if(saw[i][j+1].r==true){
 
 			exacto[i].push({x:(o*saw[i][j+1].x+(1-o)*saw[i][j].x),y:(o*saw[i][j+1].y+(1-o)*saw[i][j].y),a:parseFloat(saw[i][j].a),r:false})
@@ -859,8 +882,8 @@ for(i=0;i<saw.length;i++){
 			//console.log(saw[i][j+2])
 
 			if(j==0){
-				//o=0
-				//exacto[i].push({x:(o*saw[i][j+2].x+(1-o)*saw[i][j+1].x),y:(o*saw[i][j+2].y+(1-o)*saw[i][j+1].y),a:parseFloat(saw[i][j].a),r:false})
+				o=0
+				exacto[i].push({x:(o*saw[i][j+2].x+(1-o)*saw[i][j+1].x),y:(o*saw[i][j+2].y+(1-o)*saw[i][j+1].y),a:parseFloat(saw[i][j].a),r:false})
 				o=1
 				exacto[i].push({x:(o*saw[i][j+2].x+(1-o)*saw[i][j+1].x),y:(o*saw[i][j+2].y+(1-o)*saw[i][j+1].y),a:parseFloat(saw[i][j].a),r:false})
 			}
@@ -876,21 +899,16 @@ for(i=0;i<saw.length;i++){
 
 		else if(j==saw[i].length-2){
 
-
 			exacto[i].push({x:(o*saw[i][j+1].x+(1-o)*saw[i][j].x),y:(o*saw[i][j+1].y+(1-o)*saw[i][j].y),a:parseFloat(saw[i][j].a),r:false})
 
 			o=4
 
-			exacto[i].push({x:(o*saw[i][j+1].x+(1-o)*saw[i][j].x),y:(o*saw[i][j+1].y+(1-o)*saw[i][j].y),a:parseFloat(saw[i][j].a),r:false})
-
-			o=5
-
-			exacto[i].push({x:(o*saw[i][j+1].x+(1-o)*saw[i][j].x),y:(o*saw[i][j+1].y+(1-o)*saw[i][j].y),a:parseFloat(saw[i][j].a),r:false})
-
+			exacto[i].push({x:(o*saw[i][j+1].x+(1-o)*saw[i][j].x),y:(o*saw[i][j+1].y+(1-o)*saw[i][j].y),a:parseFloat(saw[i][j].a),r:true})
 
 		}
 
 		else{
+			
 			exacto[i].push({x:(o*saw[i][j+1].x+(1-o)*saw[i][j].x),y:(o*saw[i][j+1].y+(1-o)*saw[i][j].y),a:parseFloat(saw[i][j].a),r:(saw[i][j].r)})
 		}
 
@@ -906,19 +924,18 @@ saw = exacto
 
 function make(){
 
-
 var score_depth = parseFloat((document.getElementById("depth").value)/2)
 var score_amplitude = parseFloat((document.getElementById("amplitude").value)/2)
 
 for(i=0;i<saw.length;i++){
 	
-	if(saw[i][0].s==true){
-	document.getElementById("depth").value=score_depth
-	document.getElementById("amplitude").value=score_amplitude
+	if(saw[i][0].cut=='score'){
+		document.getElementById("depth").value=score_depth
+		document.getElementById("amplitude").value=score_amplitude
 	}
-	else{
-   document.getElementById("depth").value=(score_depth*2)
-	document.getElementById("amplitude").value=(score_amplitude*2)
+	else if(saw[i][0].cut=='cut'){
+   	document.getElementById("depth").value=(score_depth*2)
+		document.getElementById("amplitude").value=(score_amplitude*2)
 	}	
 
 
@@ -1144,21 +1161,24 @@ else if((document.getElementById("code").value)=="sbp2"){
    g+="PAUSE 3\n"
    g+="MS," + (document.getElementById("feedrate").value*scale) + "," + ((document.getElementById("feedrate").value/2)*scale) + "\n"
 
-
+//if(saw[i][0].cut!='off'){
 
 for(i=0;i<saw.length;i++){
 
+	if(saw[i][0].cut!='off'){
 
-	if(saw[i][0].s==true){
-	document.getElementById("depth").value=score_depth
-	document.getElementById("amplitude").value=score_amplitude
+	if(saw[i][0].cut=='score'){
+		document.getElementById("depth").value=score_depth
+		document.getElementById("amplitude").value=score_amplitude
 	}
-	else{
-   document.getElementById("depth").value=(score_depth*2)
-	document.getElementById("amplitude").value=(score_amplitude*2)
+	else if(saw[i][0].cut=='cut'){
+   	document.getElementById("depth").value=(score_depth*2)
+		document.getElementById("amplitude").value=(score_amplitude*2)
 	}	
 
-
+	
+			
+	
 
 	g+="J4,"+((((saw[i][0].x-xmin)/sf2)/96)*scale).toFixed(3)+","+(((((ymax-ymin)/sf2)+((ymin-(saw[i][0].y))/sf2))/96)*scale).toFixed(3) +  ",," + saw[i][0].a + "\n"
 
@@ -1248,7 +1268,11 @@ for(i=0;i<saw.length;i++){
 
    g+="JZ," + (0.25*scale).toFixed(3) + "\n"
 
+	}
+
 }
+
+
 
 	g+="J4,0,0,,0\n"
 
