@@ -122,10 +122,12 @@ SVGElement.prototype.getTransformToElement = SVGElement.prototype.getTransformTo
         <label for="code">FILE TYPE</label>
         <select name="code" id="code">
           <option value="sbp2" selected>SBP (saw cut)</option>
+
 			 <!--
           <option value="gcode">GCODE (saw cut)</option>
           <option value="sbp">SBP ("MI" oscillation)</option>
 			 -->
+
         </select>
       </fieldset>
     </form>
@@ -704,19 +706,20 @@ saw[i].push(dots[i][0])
 
 	saw[i].push({x:parseFloat((Raphael.getPointAtLength(paths[i][j], (Raphael.getTotalLength(paths[i][j]))).x).toFixed(6)),y:parseFloat((Raphael.getPointAtLength(paths[i][j], (Raphael.getTotalLength(paths[i][j]))).y).toFixed(6))})
 		
-
 	}
-
 
 }
 
 //console.log(saw)
 
+
+
+
 //remove short segments
 
 for(i=0;i<saw.length;i++){
 
-	for(j=0;j<saw[i].length-2;j++){
+	for(j=0;j<=saw[i].length-2;j++){
 
 		var d = (Math.sqrt (Math.pow((saw[i][j+1].x) - (saw[i][j].x),2) + Math.pow((saw[i][j+1].y) - (saw[i][j].y),2) ))
 		if(d<4){
@@ -726,9 +729,19 @@ for(i=0;i<saw.length;i++){
 		}
 
 	}
+}
+
+//join lines
+
+for(i=0;i<saw.length;i++){
+
+
 
 }
 
+
+
+//order lines with click
 //
 
 
@@ -1154,7 +1167,7 @@ else if((document.getElementById("code").value)=="sbp2"){
 
 	if(document.getElementById("units").value=="mm"){
 		scale = 25.4
-		g+="VD,4,1,1\n"
+		//g+="VD,4,1,1\n"
 	}
 
    g+="JZ," + (0.25*scale).toFixed(3) + "\n"
@@ -1174,13 +1187,9 @@ for(i=0;i<saw.length;i++){
 	else if(saw[i][0].cut=='cut'){
    	document.getElementById("depth").value=(score_depth*2)
 		document.getElementById("amplitude").value=(score_amplitude*2)
-	}	
+	}			
 
-	
-			
-	
-
-	g+="J4,"+((((saw[i][0].x-xmin)/sf2)/96)*scale).toFixed(3)+","+(((((ymax-ymin)/sf2)+((ymin-(saw[i][0].y))/sf2))/96)*scale).toFixed(3) +  ",," + saw[i][0].a + "\n"
+	g+="J5,"+((((saw[i][0].x-xmin)/sf2)/96)*scale).toFixed(3)+","+(((((ymax-ymin)/sf2)+((ymin-(saw[i][0].y))/sf2))/96)*scale).toFixed(3) +  ",,," + saw[i][0].a + "\n"
 
 	g+="JZ," + (saw[i][0].z*scale).toFixed(3) + "\n"
 
@@ -1190,14 +1199,14 @@ for(i=0;i<saw.length;i++){
 //
 			if((document.getElementById("saw").value=="sawtooth") && (saw[i][j].z==(parseFloat(document.getElementById("depth").value)))){
 
-				g+="M3,"+((((saw[i][j].x-xmin)/sf2)/96)*scale).toFixed(3)+","+(((((ymax-ymin)/sf2)+((ymin-(saw[i][j].y))/sf2))/96)*scale).toFixed(3) + "," + (saw[i][j].z*scale).toFixed(3) + "\n"
+				g+="M4,"+((((saw[i][j].x-xmin)/sf2)/96)*scale).toFixed(3)+","+(((((ymax-ymin)/sf2)+((ymin-(saw[i][j].y))/sf2))/96)*scale).toFixed(3) + ",," + (saw[i][j].z*scale).toFixed(3) + "\n"
 
 				g+="JZ," + ((parseFloat(document.getElementById("depth").value)*scale)+(parseFloat(document.getElementById("amplitude").value))*scale).toFixed(3) + "\n"
 			}
 
 			else if((document.getElementById("saw").value=="sawtooth") && (saw[i][j].z!=(parseFloat(document.getElementById("depth").value)))){
 
-				g+="M3,"+((((saw[i][j].x-xmin)/sf2)/96)*scale).toFixed(3)+","+(((((ymax-ymin)/sf2)+((ymin-(saw[i][j].y))/sf2))/96)*scale).toFixed(3) + "," + ((document.getElementById("depth").value)*scale).toFixed(3) + "\n"
+				g+="M4,"+((((saw[i][j].x-xmin)/sf2)/96)*scale).toFixed(3)+","+(((((ymax-ymin)/sf2)+((ymin-(saw[i][j].y))/sf2))/96)*scale).toFixed(3) + ",," + ((document.getElementById("depth").value)*scale).toFixed(3) + "\n"
 
 				g+="JZ," + ((parseFloat(document.getElementById("depth").value)*scale)+(parseFloat(document.getElementById("amplitude").value))*scale).toFixed(3) + "\n"
 			}
@@ -1208,7 +1217,7 @@ for(i=0;i<saw.length;i++){
 
 			if((document.getElementById("offset").checked==true)&&(saw[i][j+1].r==true)){
 				g+="JZ," + (0.125*scale).toFixed(3) + "\n"
-				g+="JA," + (saw[i][j+1].a) + "\n"	
+				g+="JB," + (saw[i][j+1].a) + "\n"	
 				g+="J2," + ((((saw[i][j+1].x-xmin)/sf2)/96)*scale).toFixed(3)+","+(((((ymax-ymin)/sf2)+((ymin-(saw[i][j+1].y))/sf2))/96)*scale).toFixed(3) + "\n" 
 							
 			}
@@ -1218,7 +1227,7 @@ for(i=0;i<saw.length;i++){
 
 			else{
 				g+="JZ," + (0.125*scale).toFixed(3) + "\n"
-				g+="JA," + (saw[i][j].a) + "\n"
+				g+="JB," + (saw[i][j].a) + "\n"
 			}
 
 
@@ -1231,19 +1240,19 @@ for(i=0;i<saw.length;i++){
 
 			if((document.getElementById("saw").value=="sawtooth") && (saw[i][j].z==(parseFloat(document.getElementById("depth").value)))){
 
-				g+="M4,"+((((saw[i][j].x-xmin)/sf2)/96)*scale).toFixed(3)+","+(((((ymax-ymin)/sf2)+((ymin-(saw[i][j].y))/sf2))/96)*scale).toFixed(3) + "," + (saw[i][j].z*scale).toFixed(3) + "," + saw[i][j].a +"\n"
+				g+="M5,"+((((saw[i][j].x-xmin)/sf2)/96)*scale).toFixed(3)+","+(((((ymax-ymin)/sf2)+((ymin-(saw[i][j].y))/sf2))/96)*scale).toFixed(3) + "," + (saw[i][j].z*scale).toFixed(3) + ",," + saw[i][j].a +"\n"
 
 				g+="JZ," + ((parseFloat(document.getElementById("depth").value)*scale)+(parseFloat(document.getElementById("amplitude").value))*scale).toFixed(3) + "\n"
 			}
 			else if((document.getElementById("saw").value=="sawtooth") && (saw[i][j].z!=(parseFloat(document.getElementById("depth").value)))){
-				g+="M4,"+((((saw[i][j].x-xmin)/sf2)/96)*scale).toFixed(3)+","+(((((ymax-ymin)/sf2)+((ymin-(saw[i][j].y))/sf2))/96)*scale).toFixed(3) + "," + ((document.getElementById("depth").value)*scale).toFixed(3) + "," + saw[i][j].a +"\n"
+				g+="M5,"+((((saw[i][j].x-xmin)/sf2)/96)*scale).toFixed(3)+","+(((((ymax-ymin)/sf2)+((ymin-(saw[i][j].y))/sf2))/96)*scale).toFixed(3) + "," + ((document.getElementById("depth").value)*scale).toFixed(3) + ",," + saw[i][j].a +"\n"
 
 				g+="JZ," + ((parseFloat(document.getElementById("depth").value)*scale)+(parseFloat(document.getElementById("amplitude").value))*scale).toFixed(3) + "\n"
 			}
 
 			else if(document.getElementById("saw").value!="sawtooth"){
 
-			g+="M4,"+((((saw[i][j].x-xmin)/sf2)/96)*scale).toFixed(3)+","+(((((ymax-ymin)/sf2)+((ymin-(saw[i][j].y))/sf2))/96)*scale).toFixed(3) + "," + (saw[i][j].z*scale) + "," + saw[i][j-1].a +"\n"
+			g+="M5,"+((((saw[i][j].x-xmin)/sf2)/96)*scale).toFixed(3)+","+(((((ymax-ymin)/sf2)+((ymin-(saw[i][j].y))/sf2))/96)*scale).toFixed(3) + "," + (saw[i][j].z*scale) + ",," + saw[i][j-1].a +"\n"
 			}
 
 		}
@@ -1252,18 +1261,18 @@ for(i=0;i<saw.length;i++){
 
 			if((document.getElementById("saw").value=="sawtooth") && (saw[i][saw[i].length-1].z==(parseFloat(document.getElementById("depth").value)))){
 
-				g+="M4,"+((((saw[i][saw[i].length-1].x-xmin)/sf2)/96)*scale).toFixed(3)+","+(((((ymax-ymin)/sf2)+((ymin-(saw[i][saw[i].length-1].y))/sf2))/96)*scale).toFixed(3) + "," + (saw[i][saw[i].length-1].z*scale).toFixed(3) + "," + saw[i][saw[i].length-1].a +"\n"
+				g+="M5,"+((((saw[i][saw[i].length-1].x-xmin)/sf2)/96)*scale).toFixed(3)+","+(((((ymax-ymin)/sf2)+((ymin-(saw[i][saw[i].length-1].y))/sf2))/96)*scale).toFixed(3) + "," + (saw[i][saw[i].length-1].z*scale).toFixed(3) + ",," + saw[i][saw[i].length-1].a +"\n"
 
 				g+="JZ," + ((parseFloat(document.getElementById("depth").value)*scale)+(parseFloat(document.getElementById("amplitude").value))*scale).toFixed(3) + "\n"
 			}
 
 			else if((document.getElementById("saw").value=="sawtooth") && (saw[i][saw[i].length-1].z!=(parseFloat(document.getElementById("depth").value)))){
-				g+="M4,"+((((saw[i][j].x-xmin)/sf2)/96)*scale).toFixed(3)+","+(((((ymax-ymin)/sf2)+((ymin-(saw[i][saw[i].length-1].y))/sf2))/96)*scale).toFixed(3) + "," + ((document.getElementById("depth").value)*scale).toFixed(3) + "," + saw[i][saw[i].length-1].a +"\n"
+				g+="M5,"+((((saw[i][j].x-xmin)/sf2)/96)*scale).toFixed(3)+","+(((((ymax-ymin)/sf2)+((ymin-(saw[i][saw[i].length-1].y))/sf2))/96)*scale).toFixed(3) + "," + ((document.getElementById("depth").value)*scale).toFixed(3) + ",," + saw[i][saw[i].length-1].a +"\n"
 
 				g+="JZ," + ((parseFloat(document.getElementById("depth").value)*scale)+(parseFloat(document.getElementById("amplitude").value))*scale).toFixed(3) + "\n"
 			}
 			else{
-				g+="M4,"+((((saw[i][saw[i].length-1].x-xmin)/sf2)/96)*scale).toFixed(3)+","+(((((ymax-ymin)/sf2)+((ymin-(saw[i][saw[i].length-1].y))/sf2))/96)*scale).toFixed(3) + "," + (saw[i][saw[i].length-2].z*scale).toFixed(3) + "," + saw[i][saw[i].length-1].a +"\n"
+				g+="M5,"+((((saw[i][saw[i].length-1].x-xmin)/sf2)/96)*scale).toFixed(3)+","+(((((ymax-ymin)/sf2)+((ymin-(saw[i][saw[i].length-1].y))/sf2))/96)*scale).toFixed(3) + "," + (saw[i][saw[i].length-2].z*scale).toFixed(3) + ",," + saw[i][saw[i].length-1].a +"\n"
 			}
 
    g+="JZ," + (0.25*scale).toFixed(3) + "\n"
@@ -1274,7 +1283,7 @@ for(i=0;i<saw.length;i++){
 
 
 
-	g+="J4,0,0,,0\n"
+	g+="J5,0,0,,,0\n"
 
 
 
