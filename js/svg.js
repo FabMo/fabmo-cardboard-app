@@ -56,14 +56,6 @@ else{
 }
 
 
-
-
-
-
-
-
-
-
 function svg2pg(){
 
    svg_paths=[]
@@ -160,7 +152,6 @@ function svg2pg(){
 }
 
 function scale(){
-
 
 //close
 

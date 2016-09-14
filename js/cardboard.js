@@ -132,7 +132,7 @@ saw[i].push(dots[i][0])
 
 	l=parseFloat(((Raphael.getTotalLength(paths[i][j]))/(Math.ceil(Raphael.getTotalLength(paths[i][j])/cutlength))).toFixed(3))
 
-		for(j2=l;j2<(Raphael.getTotalLength(paths[i][j])-1);j2=j2+l){
+		for(j2=l;j2<(Raphael.getTotalLength(paths[i][j]));j2=j2+l){
 
 			saw[i].push({x:parseFloat((Raphael.getPointAtLength(paths[i][j], j2).x).toFixed(6)),y:parseFloat((Raphael.getPointAtLength(paths[i][j], j2).y).toFixed(6))})
 
@@ -144,16 +144,16 @@ saw[i].push(dots[i][0])
 
 }
 
-//remove short segments
+//rm short segments
 
 for(i=0;i<saw.length;i++){
 
 	for(j=0;j<=saw[i].length-2;j++){
 
 		var d = (Math.sqrt (Math.pow((saw[i][j+1].x) - (saw[i][j].x),2) + Math.pow((saw[i][j+1].y) - (saw[i][j].y),2) ))
-		if(d<4){
-		saw[i].splice(j+1,1)
-		j--
+		if(d<1){
+		//saw[i].splice(j+1,1)
+		//j--
 		
 		}
 
