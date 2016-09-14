@@ -296,12 +296,15 @@ for(i=0;i<saw.length;i++){
 		else{		
 
 			if((document.getElementById("saw").value=="sawtooth") && (saw[i][j].z==(parseFloat(document.getElementById("depth").value)))){
-
+				//rotate first TH
+				g+="M5,,,,," + saw[i][j].a +"\n"
 				g+="M5,"+((((saw[i][j].x-xmin)/sf2)/96)*scale).toFixed(3)+","+(((((ymax-ymin)/sf2)+((ymin-(saw[i][j].y))/sf2))/96)*scale).toFixed(3) + "," + (saw[i][j].z*scale).toFixed(3) + ",," + saw[i][j].a +"\n"
 
 				g+="JZ," + ((parseFloat(document.getElementById("depth").value)*scale)+(parseFloat(document.getElementById("amplitude").value))*scale).toFixed(3) + "\n"
 			}
 			else if((document.getElementById("saw").value=="sawtooth") && (saw[i][j].z!=(parseFloat(document.getElementById("depth").value)))){
+				//rotate first TH
+				g+="M5,,,,," + saw[i][j].a +"\n"
 				g+="M5,"+((((saw[i][j].x-xmin)/sf2)/96)*scale).toFixed(3)+","+(((((ymax-ymin)/sf2)+((ymin-(saw[i][j].y))/sf2))/96)*scale).toFixed(3) + "," + ((document.getElementById("depth").value)*scale).toFixed(3) + ",," + saw[i][j].a +"\n"
 
 				g+="JZ," + ((parseFloat(document.getElementById("depth").value)*scale)+(parseFloat(document.getElementById("amplitude").value))*scale).toFixed(3) + "\n"
@@ -317,18 +320,23 @@ for(i=0;i<saw.length;i++){
    	}
 
 			if((document.getElementById("saw").value=="sawtooth") && (saw[i][saw[i].length-1].z==(parseFloat(document.getElementById("depth").value)))){
-
+				//rotate first TH
+				g+="M5,,,,," + saw[i][saw[i].length-1].a +"\n"
 				g+="M5,"+((((saw[i][saw[i].length-1].x-xmin)/sf2)/96)*scale).toFixed(3)+","+(((((ymax-ymin)/sf2)+((ymin-(saw[i][saw[i].length-1].y))/sf2))/96)*scale).toFixed(3) + "," + (saw[i][saw[i].length-1].z*scale).toFixed(3) + ",," + saw[i][saw[i].length-1].a +"\n"
 
 				g+="JZ," + ((parseFloat(document.getElementById("depth").value)*scale)+(parseFloat(document.getElementById("amplitude").value))*scale).toFixed(3) + "\n"
 			}
 
 			else if((document.getElementById("saw").value=="sawtooth") && (saw[i][saw[i].length-1].z!=(parseFloat(document.getElementById("depth").value)))){
+				//rotate first TH
+				g+="M5,,,,," + saw[i][saw[i].length-1].a +"\n"
 				g+="M5,"+((((saw[i][j].x-xmin)/sf2)/96)*scale).toFixed(3)+","+(((((ymax-ymin)/sf2)+((ymin-(saw[i][saw[i].length-1].y))/sf2))/96)*scale).toFixed(3) + "," + ((document.getElementById("depth").value)*scale).toFixed(3) + ",," + saw[i][saw[i].length-1].a +"\n"
 
 				g+="JZ," + ((parseFloat(document.getElementById("depth").value)*scale)+(parseFloat(document.getElementById("amplitude").value))*scale).toFixed(3) + "\n"
 			}
 			else{
+				//rotate first TH
+				g+="M5,,,,," + saw[i][saw[i].length-1].a +"\n"
 				g+="M5,"+((((saw[i][saw[i].length-1].x-xmin)/sf2)/96)*scale).toFixed(3)+","+(((((ymax-ymin)/sf2)+((ymin-(saw[i][saw[i].length-1].y))/sf2))/96)*scale).toFixed(3) + "," + (saw[i][saw[i].length-2].z*scale).toFixed(3) + ",," + saw[i][saw[i].length-1].a +"\n"
 			}
 
