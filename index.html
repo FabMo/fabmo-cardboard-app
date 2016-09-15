@@ -92,8 +92,8 @@
         <select name="code" id="code">
           <option value="sbp2" selected>SBP (saw cut)</option>
 			 <!--
-          <option value="gcode">GCODE (saw cut)</option>
-          <option value="sbp">SBP ("MI" oscillation)</option>
+          	<option value="gcode">GCODE (saw cut)</option>
+          	<option value="sbp">SBP ("MI" oscillation)</option>
 			 -->
         </select>
       </fieldset>
@@ -165,7 +165,6 @@
 
 </div>
   <div data-role="footer" style="text-align:center;">
-
     <a href="#pageone" class="ui-btn ui-corner-all ui-shadow ui-icon-carat-r ui-btn-icon-right" onclick="sawtooth();">LOAD SVG</a>
   </div>
 </div> 
@@ -205,15 +204,11 @@ $("#myCanvas").bind('click', function(e) {
 })
 
 
-
 $( "#resize" ).click(function() {
-
    target_width = eval(window.prompt("ENTER NEW WIDTH (INCH)")*96)
-
    if((target_width!=0)){
       sf2 = ((xmax-xmin)/target_width)
-   }
-	
+   }	
 })
 
 
