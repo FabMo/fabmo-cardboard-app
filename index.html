@@ -86,9 +86,9 @@
       </fieldset>
     </form>
 
-    <form method="post">
+    <form method="post" id="cut">
       <fieldset class="ui-field-contain">
-        <label for="code">FILE TYPE</label>
+        <label for="code">CUT TYPE</label>
         <select name="code" id="code">
           <option value="sbp2" selected>SBP (saw cut)</option>
 			 <!--
@@ -101,27 +101,30 @@
 
    <form method="post">
       <fieldset class="ui-field-contain">
-        <label for="saw">SAW CUT</label>
+        <label for="saw">CUT TYPE</label>
         <select name="saw" id="saw">
+			 <!--
           <option value="triangle">TRIANGLE</option>
+			 -->
           <option value="sawtooth" selected>SAWTOOTH</option>
+
         </select>
       </fieldset>
     </form>
 
     <form method="post">
       <fieldset class="ui-field-contain">
-        <label for="units">FILE UNIT</label>
+        <label for="units">UNITS</label>
         <select name="units" id="units">
-          <option value="inch">INCH</option>
-          <option value="mm" selected>MM</option>
+          <option value="inch" selected>INCH</option>
+          <option value="mm">MM</option>
         </select>
       </fieldset>
     </form>
 
     <form method="post">
       <fieldset class="ui-field-contain">
-        <label for="retract">RETRACT ANGLE (deg)</label>
+        <label for="retract">RETRACT ANGLE (deg&#177;) </label>
 		  <input name="retract" id="retract" type="number" value="20" step="1" autocomplete="on" min="5">
       </fieldset>
     </form>
@@ -150,13 +153,13 @@
 
     <form method="post">
       <fieldset class="ui-field-contain">
-        <label for="feedrate">FEEDRATE (inch/sec)</label>
+        <label for="feedrate">FEED & PLUNGE RATE (inch/sec)</label>
 		  <input name="feedrate" id="feedrate" type="number" value="4" step="0.1" autocomplete="on" min="0.1">
       </fieldset>
     </form>
 
-
-    <form method="post">
+	
+    <form method="post" id="offset">
       <fieldset class="ui-field-contain">
         <label for="offset">BLADE OFFSET</label>
 		  <input name="offset" id="offset" type="checkbox">
@@ -179,28 +182,24 @@ $("#myCanvas").bind('click', function(e) {
 
 	for(i=0;i<saw.length;i++){
 		for(j=0;j<saw[i].length;j++){
-
-		if(((Math.abs(score.x-((saw[i][j].x-xmin)*sf)))<5)&&((Math.abs(score.y-((saw[i][j].y-ymin)*sf)))<5)){
-
-		if(saw[i][0].cut=='off'){		
-			saw[i][0].cut='cut'
-		}
-		else if(saw[i][0].cut=='cut'){
-			saw[i][0].cut='score'
-
-		}
-		else{
-			saw[i][0].cut='off'
-		}
-			i=saw.length-1
-			j=saw[i].length-1
-		
-		}
-
+			if(((Math.abs(score.x-((saw[i][j].x-xmin)*sf)))<5)&&((Math.abs(score.y-((saw[i][j].y-ymin)*sf)))<5)){
+				if(saw[i][0].cut=='off'){		
+					saw[i][0].cut='cut'
+				}
+				else if(saw[i][0].cut=='cut'){
+					saw[i][0].cut='score'
+				}
+				else{
+					saw[i][0].cut='off'
+				}
+				i=saw.length-1
+				j=saw[i].length-1
+			}
 		}
 	}
 
 	draw()
+
 })
 
 
@@ -210,7 +209,6 @@ $( "#resize" ).click(function() {
       sf2 = ((xmax-xmin)/target_width)
    }	
 })
-
 
 $(window).resize(function(){
 	draw()

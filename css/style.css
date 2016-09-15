@@ -20,12 +20,18 @@
 }
 
 #svg{
-
    position: absolute;
    height: 50vh;
    width: 50vw;
    left: -999px;
    top: -999px;
+}
 
+#cut{
+   display: none;
+}
+
+#offset{
+   display: none;
 }
 
