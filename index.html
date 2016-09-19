@@ -79,7 +79,7 @@
 
     <form method="post">
       <fieldset class="ui-field-contain">
-        <label for="material">MATERIAL TYPE</label>
+        <label for="material">MATERIAL</label>
         <select name="material" id="material">
           <option value="cardboard" selected>CARDBOARD</option>
         </select>
@@ -88,13 +88,13 @@
 
     <form method="post" id="cut">
       <fieldset class="ui-field-contain">
-        <label for="code">CUT TYPE</label>
+        <label for="code">CUT</label>
         <select name="code" id="code">
           <option value="sbp2" selected>SBP (saw cut)</option>
-			 <!--
+			   <!--
           	<option value="gcode">GCODE (saw cut)</option>
           	<option value="sbp">SBP ("MI" oscillation)</option>
-			 -->
+			   -->
         </select>
       </fieldset>
     </form>
@@ -108,6 +108,8 @@
 			 -->
           <option value="sawtooth" selected>SAWTOOTH 1</option>
           <option value="sawtooth2">SAWTOOTH 2</option>
+          <option value="punch">PUNCH 1</option>
+          <option value="punch2">PUNCH 2</option>
 
         </select>
       </fieldset>
@@ -153,14 +155,12 @@
       </fieldset>
     </form>
 
-
     <form method="post">
       <fieldset class="ui-field-contain">
         <label for="feedrate">FEED & PLUNGE RATE (inch/sec)</label>
 		  <input name="feedrate" id="feedrate" type="number" value="4" step="0.1" autocomplete="on" min="0.1">
       </fieldset>
     </form>
-
 	
     <form method="post" id="offset">
       <fieldset class="ui-field-contain">
@@ -200,11 +200,8 @@ $("#myCanvas").bind('click', function(e) {
 			}
 		}
 	}
-
 	draw()
-
 })
-
 
 $( "#resize" ).click(function() {
    target_width = eval(window.prompt("ENTER NEW WIDTH (INCH)")*96)

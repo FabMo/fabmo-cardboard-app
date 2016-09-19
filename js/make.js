@@ -275,7 +275,7 @@ if(document.getElementById("saw").value=="sawtooth"){
 		}
 	}
 }
-if(document.getElementById("saw").value=="sawtooth2"){
+else if(document.getElementById("saw").value=="sawtooth2"){
 
 	for(i=0;i<saw.length;i++){
 		if(saw[i][0].cut!='off'){
@@ -325,6 +325,62 @@ if(document.getElementById("saw").value=="sawtooth2"){
 					}					
 					//g+="M5,"+((((saw[i][j].x-xmin)/sf2)/96)*scale).toFixed(3)+","+(((((ymax-ymin)/sf2)+((ymin-(saw[i][j].y))/sf2))/96)*scale).toFixed(3) + "," + (saw[i][j].z*scale) + ",," + saw[i][j-1].a +"\n"					
 				}
+	   	}
+	   	g+="JZ," + (0.25*scale).toFixed(3) + "\n"
+		}
+	}
+}
+else if(document.getElementById("saw").value=="punch"){
+
+	for(i=0;i<saw.length;i++){
+		if(saw[i][0].cut!='off'){
+			if(saw[i][0].cut=='score'){
+				document.getElementById("depth").value=score_depth
+				document.getElementById("amplitude").value=score_amplitude
+			}
+			else if(saw[i][0].cut=='cut'){
+   			document.getElementById("depth").value=(score_depth*2)
+				document.getElementById("amplitude").value=(score_amplitude*2)
+			}			
+
+			g+="J5,"+((((saw[i][0].x-xmin)/sf2)/96)*scale).toFixed(3)+","+(((((ymax-ymin)/sf2)+((ymin-(saw[i][0].y))/sf2))/96)*scale).toFixed(3) +  ",,," + saw[i][0].a + "\n"
+			g+="MZ," + (parseFloat(document.getElementById("depth").value)*scale) + "\n"
+			g+="JZ,0.1\n"
+
+	   	for(j=1;j<saw[i].length-1;j++){
+
+					g+="J5,"+((((saw[i][j].x-xmin)/sf2)/96)*scale).toFixed(3)+","+(((((ymax-ymin)/sf2)+((ymin-(saw[i][j].y))/sf2))/96)*scale).toFixed(3) + ",,," + saw[i][j].a +"\n"
+					g+="MZ," + (parseFloat(document.getElementById("depth").value)*scale) + "\n"
+					g+="JZ,0.1\n"	
+
+	   	}
+	   	g+="JZ," + (0.25*scale).toFixed(3) + "\n"
+		}
+	}
+}
+else if(document.getElementById("saw").value=="punch2"){
+
+	for(i=0;i<saw.length;i++){
+		if(saw[i][0].cut!='off'){
+			if(saw[i][0].cut=='score'){
+				document.getElementById("depth").value=score_depth
+				document.getElementById("amplitude").value=score_amplitude
+			}
+			else if(saw[i][0].cut=='cut'){
+   			document.getElementById("depth").value=(score_depth*2)
+				document.getElementById("amplitude").value=(score_amplitude*2)
+			}			
+
+			g+="J5,"+((((saw[i][0].x-xmin)/sf2)/96)*scale).toFixed(3)+","+(((((ymax-ymin)/sf2)+((ymin-(saw[i][0].y))/sf2))/96)*scale).toFixed(3) +  ",,," + (saw[i][0].a-180).toFixed(2) + "\n"
+			g+="MZ," + (parseFloat(document.getElementById("depth").value)*scale) + "\n"
+			g+="JZ,0.1\n"
+
+	   	for(j=1;j<saw[i].length-1;j++){
+
+					g+="J5,"+((((saw[i][j].x-xmin)/sf2)/96)*scale).toFixed(3)+","+(((((ymax-ymin)/sf2)+((ymin-(saw[i][j].y))/sf2))/96)*scale).toFixed(3) + ",,," + (saw[i][j].a-180).toFixed(2) +"\n"
+					g+="MZ," + (parseFloat(document.getElementById("depth").value)*scale) + "\n"
+					g+="JZ,0.1\n"	
+
 	   	}
 	   	g+="JZ," + (0.25*scale).toFixed(3) + "\n"
 		}
